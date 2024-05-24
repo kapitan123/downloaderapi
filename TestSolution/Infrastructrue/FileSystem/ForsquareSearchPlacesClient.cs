@@ -5,7 +5,7 @@ using TestSolution.Domain;
 
 namespace TestSolution.Infrastructrue.Web;
 
-public class ForsquareSearchPlacesClient : FileContentStore
+public class ForsquareSearchPlacesClient : IFileContentStore
 {
 	private readonly HttpClient _httpClient;
 	private readonly ForsquareHttpClientOptions _options;
