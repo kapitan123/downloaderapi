@@ -13,7 +13,7 @@ builder.Services.AddHttpClient<ForsquareSearchPlacesClient>();
 builder.Services.Configure<ForsquareHttpClientOptions>(
 	builder.Configuration.GetSection(ForsquareHttpClientOptions.Section));
 
-builder.Services.AddTransient<IForsquareSearchPlacesClient, ForsquareSearchPlacesClient>();
+builder.Services.AddTransient<FileContentStore, ForsquareSearchPlacesClient>();
 
 var app = builder.Build();
 

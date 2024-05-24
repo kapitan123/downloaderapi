@@ -1,6 +1,7 @@
 ﻿namespace TestSolution.Infrastructrue.Persistance;
 
-public class InMemoryRepostitory(TestDbContext context) : ITestRepository
+// AK Todo it is explicitly configured 
+public class InMemoryRepostitory(TestDbContext context) : IDocumentsMetadataRepository
 {
 
 }

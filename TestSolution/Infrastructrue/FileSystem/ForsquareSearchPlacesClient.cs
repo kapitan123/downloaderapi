@@ -5,7 +5,7 @@ using TestSolution.Domain;
 
 namespace TestSolution.Infrastructrue.Web;
 
-public class ForsquareSearchPlacesClient : IForsquareSearchPlacesClient
+public class ForsquareSearchPlacesClient : FileContentStore
 {
 	private readonly HttpClient _httpClient;
 	private readonly ForsquareHttpClientOptions _options;
@@ -19,7 +19,7 @@ public class ForsquareSearchPlacesClient : IForsquareSearchPlacesClient
 		/// _httpClient.DefaultRequestHeaders.Add("Authorization", "fsq38jf5s6BtxsM5GasJ/3pdhr7HlOSL2O6cjpiwegCvd90=");
 	}
 
-	public async Task<List<Place>> SearchInARadiusOf(MainGeocode point, int radius, CancellationToken token)
+	public async Task<List<Place>> SearchInARadiusOf(MimeType point, int radius, CancellationToken token)
 	{
 		var queryStringTemplate = $"?ll={point.Lat}%2C{point.Long}&radius={radius}";
 
@@ -45,7 +45,7 @@ public class ForsquareSearchPlacesClient : IForsquareSearchPlacesClient
 		var places = foursquareResp!.Results.Select(p => new Place
 		{
 			Name = p.Name,
-			MainGeocode = new MainGeocode(p.Geocodes.Main.Latitude, p.Geocodes.Main.Longitude)
+			MainGeocode = new MimeType(p.Geocodes.Main.Latitude, p.Geocodes.Main.Longitude)
 		}).ToList();
 
 		return places;
