@@ -2,7 +2,7 @@
 
 namespace TestSolution.Infrastructrue.Persistance;
 
-public interface IDocumentsMetadataRepository
+public interface IMetadataRepository
 {
 	public Task<DocumentMeta> GetAsync(string id);
 

@@ -8,6 +8,8 @@ public class DocumentMeta
 
 	public string Type { get; set; }
 
+	public long Size { get; set; }
+
 	public string PreviewAddress { get; set; }
 
 	public DateTime UploadedOn { get; set; }

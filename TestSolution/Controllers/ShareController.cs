@@ -5,10 +5,10 @@ namespace TestSolution.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class ShareController(IDocumentsMetadataRepository metaRepo, ILogger<ShareController> logger) : ControllerBase
+	public class ShareController(IMetadataRepository metaRepo, ILogger<ShareController> logger) : ControllerBase
 	{
 		private readonly ILogger<ShareController> _logger = logger;
-		private readonly IDocumentsMetadataRepository _metaRepo = metaRepo;
+		private readonly IMetadataRepository _metaRepo = metaRepo;
 
 		// AK TODO add versions to jsons
 		// AK TODO I'm not a big fan of a noun based apis

@@ -6,13 +6,14 @@ using TestSolution.Domain;
 
 namespace TestSolution.Controllers
 {
+	// AK TODO add versioning
 	[ApiController]
 	[Route("api/[controller]")]
-	public class DocumentsController(IDocumentUploader uploader, IContentTypeValidator mimeValidator, ILogger<DocumentsController> logger) : ControllerBase
+	public class DocumentsController(IDocumentStorage uploader, IContentTypeValidator mimeValidator, ILogger<DocumentsController> logger) : ControllerBase
 	{
 		private readonly ILogger<DocumentsController> _logger = logger;
-		private readonly IDocumentUploader _uploader = uploader;
-		private readonly IContentTypeValidator _mimeValidator = mimeValidator;
+		private readonly IDocumentStorage _uploader = uploader;
+		private readonly IContentTypeValidator _contentTypeValidator = mimeValidator;
 
 		// AK TODO add versions to jsons
 		[HttpPost("upload", Name = "Upload")]
@@ -33,39 +34,28 @@ namespace TestSolution.Controllers
 				return BadRequest("File must not be empty.");
 			}
 
-			if (!_mimeValidator.IsSupported(file.ContentType))
+			if (!_contentTypeValidator.IsSupported(file.ContentType))
 			{
 				// AK TODO add rpoblem details
-				return BadRequest($"Contenttype {file.ContentType} is not supported. Supported types are: {string.Join(" ,", _mimeValidator.SupportedTypes)}");
+				return BadRequest($"Contenttype {file.ContentType} is not supported. " +
+					$"Supported types are: {string.Join(" ,", _contentTypeValidator.SupportedTypes)}");
 			}
-			// AK TOFO generate preview in parallel
-
-			// AK TODO should validate supported documentTypes
 			try
 			{
-
 				var meta = new DocumentMeta
 				{
 					Name = file.FileName,
 					UploadedOn = DateTime.UtcNow,
 					Type = file.ContentType,
-
+					Size = file.Length
 				};
 
-				// Extract meta
-				// Start stream
-				Task CopyToAsync(Stream target, CancellationToken cancellationToken = default);
-				var filePath = Path.Combine("Uploads", file.FileName);
-
-				using (var stream = new FileStream(filePath, FileMode.Create))
+				using (var stream = file.OpenReadStream())
 				{
-					await file.CopyToAsync(stream, token);
+					await _uploader.UploadNew(stream, meta, token);
 				}
 
-				// Simulate storing file metadata in your Filestorage
-				await _fsclient.StoreFileMetadataAsync(file.FileName, filePath, token);
-
-				return CreatedAtRoute("Upload", new { fileName = file.FileName }, null);
+				return Created();
 			}
 			catch (Exception ex)
 			{
