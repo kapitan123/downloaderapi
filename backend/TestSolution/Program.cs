@@ -12,6 +12,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<SqlSettingsOptions>(
 	builder.Configuration.GetSection(SqlSettingsOptions.Section));
 
+builder.Services.Configure<SqlSettingsOptions>(
+	builder.Configuration.GetSection(SqlSettingsOptions.Section));
 
 var app = builder.Build();
 

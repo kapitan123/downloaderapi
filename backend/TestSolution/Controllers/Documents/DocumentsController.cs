@@ -1,7 +1,5 @@
 using DocumentStore.Controllers.Errors;
 using DocumentStore.Domain.DocumentUploader;
-using DocumentStore.Domain.MimeTypesValidator;
-using DocumentStore.Domain.PreviewGenerator;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentStore.Controllers.Documents
@@ -11,8 +9,7 @@ namespace DocumentStore.Controllers.Documents
 	[Route("api/documents")]
 	public class DocumentsController(IDocumentStorage store,
 		IZipper zipper,
-		IPreviewGenerator previewGenerator,
-		IContentTypeValidator contentTypeValidator,
+		IUploadValidator uploadValidator,
 		ILogger<DocumentsController> logger) : ControllerBase
 	{
 
@@ -34,12 +31,17 @@ namespace DocumentStore.Controllers.Documents
 			{
 				return BadRequest(ApiErrors.FileMustNotBeEmpty);
 			}
+			// AK TODOthis can be moved to validator itself
+			if (file.Length > uploadValidator.MaxSize)
+			{
+				return BadRequest("file is too big");
+			}
 
-			if (!contentTypeValidator.IsSupported(file.ContentType))
+			if (!uploadValidator.IsSupported(file.ContentType))
 			{
 				// AK TODO add rpoblem details
 				return BadRequest($"Contenttype {file.ContentType} is not supported. " +
-					$"Supported types are: {string.Join(" ,", contentTypeValidator.SupportedTypes)}");
+					$"Supported types are: {string.Join(" ,", uploadValidator.SupportedTypes)}");
 			}
 			try
 			{

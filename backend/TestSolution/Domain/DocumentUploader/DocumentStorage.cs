@@ -10,23 +10,43 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 {
 	public async Task<(DocumentMeta Meta, Stream Content)> GetAsync(Guid id, CancellationToken token)
 	{
-		// We can limit API to Get/Save and keep the increment logic in domain object
-		// But the tradeoff would be a slow and complex concurrency control
-		await metaRepo.IncrementDownloads(id);
 		var meta = await metaRepo.GetAsync(id);
-
 		var content = await store.ReadAsync(meta.ContentAddress, default);
 
-		// AK TODO
-		// We assume if we were able to successfully download a stream upsream services wont fail
-		// We also assume that if it does fail, and an enduser doesn't get his file
-		// We won't decrement a counter 
+		// We can limit the API to Get/Save operations and keep the increment logic in the domain object.
+		// However, the tradeoff would be slower performance and complex concurrency control.
+		// Currently, we do not provide a rollback of an increment if an upstream service fails.
+		// This functionality might be added later.
+		await metaRepo.IncrementDownloads(id);
 
-		// AK TODO if we implement a separate method to perform an atomic counter increment
-		// the system will work faster
-		// but i will refreain from this optimisation, as the 
-		// AK TODO add atomar increment
 		return (meta, content);
+	}
+
+	/// <summary>
+	/// Uploads document
+	/// </summary>
+	/// <param name="fileContent"></param>
+	/// <param name="meta">metadata of the new document</param>
+	/// <returns>updated metada</returns>
+	public async Task SaveAsync(DocumentMeta meta, Stream content, CancellationToken token)
+	{
+		using var fsGenerator = new MemoryStream();
+		using var fsStore = new MemoryStream();
+		using var fsTee = new TeeStream(fsGenerator, fsStore);
+
+		content.CopyTo(fsTee);
+
+		var previewGenTask = previewGenerator.GeneratePreview(fsGenerator, meta.ContentType, token);
+
+		var saveFileTask = store.SaveAsync(fsStore, token);
+
+		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
+
+		// AK TODO probably I should not mutate it
+		// Add error handling to not fail if preview gen fails
+		meta.ContentAddress = saveFileTask.Result;
+
+		await metaRepo.SaveAsync(meta);
 	}
 
 	public Task<Stream> GetZipedFiles(IEnumerable<Guid> fileIds, CancellationToken token)
@@ -51,33 +71,5 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 	public Task<DocumentMeta> GetMetaOfAllDocuments()
 	{
 		throw new NotImplementedException();
-	}
-
-	/// <summary>
-	/// Uploads document
-	/// </summary>
-	/// <param name="fileContent"></param>
-	/// <param name="meta">metadata of the new document</param>
-	/// <returns>updated metada</returns>
-	public async Task SaveAsync(DocumentMeta meta, Stream content, CancellationToken token)
-	{
-		// AK Todo should be a single transaction
-		using var fsGenerator = new MemoryStream();
-		using var fsStore = new MemoryStream();
-		using var fsTee = new TeeStream(fsGenerator, fsStore);
-
-		content.CopyTo(fsTee);
-
-		var previewGenTask = previewGenerator.GeneratePreview(fsGenerator, meta.ContentType, token);
-
-		var saveFileTask = store.SaveAsync(fsStore, token);
-
-		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
-
-		// AK TODO probably I should not mutate it
-		// Add error handling to not fail if preview gen fails
-		meta.ContentAddress = saveFileTask.Result;
-
-		await metaRepo.SaveAsync(meta);
 	}
 }
