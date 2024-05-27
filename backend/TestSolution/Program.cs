@@ -1,4 +1,4 @@
-using TestSolution.Infrastructrue.Web;
+using DocumentStore.Infrastructrue.Persistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,11 +9,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddHttpClient<ForsquareSearchPlacesClient>();
-builder.Services.Configure<ForsquareHttpClientOptions>(
-	builder.Configuration.GetSection(ForsquareHttpClientOptions.Section));
+builder.Services.Configure<SqlSettingsOptions>(
+	builder.Configuration.GetSection(SqlSettingsOptions.Section));
 
-builder.Services.AddTransient<IFileContentStore, ForsquareSearchPlacesClient>();
 
 var app = builder.Build();
 

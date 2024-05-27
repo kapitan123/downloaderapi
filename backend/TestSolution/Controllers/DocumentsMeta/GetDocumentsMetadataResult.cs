@@ -1,6 +1,6 @@
 ﻿using TestSolution.Domain;
 
-namespace TestSolution.Controllers;
+namespace DocumentStore.Controllers.DocumentsMeta;
 
 public class GetDocumentsMetadataResult
 {

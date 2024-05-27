@@ -1,6 +1,6 @@
-﻿namespace TestSolution.Infrastructrue.Web;
+﻿namespace DocumentStore.Infrastructrue.Persistance;
 
-public class ForsquareHttpClientOptions
+public class SqlSettingsOptions
 {
 	public static string Section => "TestHttpClient";
 	public string Url { get; set; } = "";

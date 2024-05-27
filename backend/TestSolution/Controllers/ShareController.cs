@@ -26,19 +26,7 @@ namespace TestSolution.Controllers
 
 			try
 			{
-
-				Task CopyToAsync(Stream target, CancellationToken cancellationToken = default);
-				var filePath = Path.Combine("Uploads", file.FileName);
-
-				using (var stream = new FileStream(filePath, FileMode.Create))
-				{
-					await file.CopyToAsync(stream, token);
-				}
-
-				// Simulate storing file metadata in your Filestorage
-				await _fsclient.StoreFileMetadataAsync(file.FileName, filePath, token);
-
-				return CreatedAtRoute("Upload", new { fileName = file.FileName }, null);
+				throw new NotImplementedException();
 			}
 			catch (Exception ex)
 			{
