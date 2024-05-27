@@ -1,4 +1,4 @@
-using DocumentStore.Infrastructrue.Persistance;
+using DocumentStore.Infrastructrue.MetadataPersistance;
 
 var builder = WebApplication.CreateBuilder(args);
 

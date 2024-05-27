@@ -1,6 +1,6 @@
 ﻿using TestSolution.Domain;
 
-namespace TestSolution.Infrastructrue.Persistance;
+namespace DocumentStore.Infrastructrue.MetadataPersistance;
 
 public interface IMetadataRepository
 {

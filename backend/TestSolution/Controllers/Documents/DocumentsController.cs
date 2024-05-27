@@ -14,8 +14,6 @@ namespace DocumentStore.Controllers.Documents
 		IUploadValidator uploadValidator,
 		ILogger<DocumentsController> logger) : ControllerBase
 	{
-
-		// AK TODO add versions to jsons
 		[HttpPost("upload", Name = "Upload")]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
@@ -60,11 +58,11 @@ namespace DocumentStore.Controllers.Documents
 			}
 		}
 
-		[HttpGet("{id}", Name = "Download")]
-		[Produces("application/octet-stream")]
+		[HttpGet("{id}/share", Name = "Share")]
+		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownLoadFile([FromRoute] Guid id, int expiration, CancellationToken token)
+		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, int expiration, CancellationToken token)
 		{
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
@@ -73,13 +71,26 @@ namespace DocumentStore.Controllers.Documents
 			return Ok(uri);
 		}
 
-		[HttpGet("{id}/share", Name = "Share")]
+		[HttpGet("shared/{id}/download", Name = "DownloadShared")]
+		[Produces("application/octet-stream")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status410Gone)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> DownloadFromShareUrl([FromRoute] Guid pudlicId, int expiration, CancellationToken token)
+		{
+			// It would be better to use an inbuilt s3 presigned url,
+			// But we would not be able to count how many times the file was downloaded,
+			// Only how many times we generated a url download a link.
+			var uri = await shareService.GetDocumentByPublicId(pudlicId);
+			return Ok(uri);
+		}
+
+		[HttpGet("{id}", Name = "Download")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> GetShareUrl(Guid id, CancellationToken token)
+		public async Task<IActionResult> DownLoadFile(Guid id, CancellationToken token)
 		{
-
 			var (meta, content) = await store.GetAsync(id, token);
 			Response.ContentLength = meta.Size;
 			Response.Headers.Append("Accept-Ranges", "bytes");

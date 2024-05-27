@@ -1,6 +1,6 @@
 ﻿using TestSolution.Domain;
 
-namespace TestSolution.Infrastructrue.Persistance;
+namespace DocumentStore.Infrastructrue.MetadataPersistance;
 
 // AK Todo it is explicitly configured 
 public class InMemoryRepostitory(TestDbContext context) : IMetadataRepository

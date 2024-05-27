@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace TestSolution.Infrastructrue.Persistance;
+namespace DocumentStore.Infrastructrue.MetadataPersistance;
 
 public class TestDbContext : DbContext
 {
