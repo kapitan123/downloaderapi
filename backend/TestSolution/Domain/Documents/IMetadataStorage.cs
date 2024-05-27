@@ -1,6 +1,6 @@
 ﻿using TestSolution.Domain;
 
-namespace DocumentStore.Domain.DocumentUploader;
+namespace DocumentStore.Domain.Documents;
 
 public interface IMetadataStorage
 {

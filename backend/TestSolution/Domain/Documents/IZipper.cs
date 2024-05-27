@@ -1,4 +1,4 @@
-﻿namespace DocumentStore.Domain.DocumentUploader;
+﻿namespace DocumentStore.Domain.Documents;
 
 public interface IZipper
 {

@@ -1,5 +1,6 @@
 using DocumentStore.Controllers.Errors;
-using DocumentStore.Domain.DocumentUploader;
+using DocumentStore.Domain.Documents;
+using DocumentStore.Domain.ShareabaleUrls;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentStore.Controllers.Documents
@@ -8,6 +9,7 @@ namespace DocumentStore.Controllers.Documents
 	[ApiController]
 	[Route("api/documents")]
 	public class DocumentsController(IDocumentStorage store,
+		IShareService shareService,
 		IZipper zipper,
 		IUploadValidator uploadValidator,
 		ILogger<DocumentsController> logger) : ControllerBase
@@ -62,8 +64,22 @@ namespace DocumentStore.Controllers.Documents
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownLoadFile(Guid id, CancellationToken token)
+		public async Task<IActionResult> DownLoadFile([FromRoute] Guid id, int expiration, CancellationToken token)
 		{
+			// It would be better to use an inbuilt s3 presigned url,
+			// But we would not be able to count how many times the file was downloaded,
+			// Only how many times we generated a url download a link.
+			var uri = await shareService.GetPublicUriFor(id, expiration);
+			return Ok(uri);
+		}
+
+		[HttpGet("{id}/share", Name = "Share")]
+		[Produces("application/octet-stream")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> GetShareUrl(Guid id, CancellationToken token)
+		{
+
 			var (meta, content) = await store.GetAsync(id, token);
 			Response.ContentLength = meta.Size;
 			Response.Headers.Append("Accept-Ranges", "bytes");
@@ -89,11 +105,9 @@ namespace DocumentStore.Controllers.Documents
 				return BadRequest("The max number of zipped files is 10");
 			}
 
-			var zipName = $"{DateTime.Now:yyyy_MM_dd-HH_mm_ss}.zip";
-
 			var zipStream = await zipper.GetZipedFiles(ids, token);
 
-			return File(zipStream, "application/zip", zipName);
+			return File(zipStream, "application/zip", $"{DateTime.Now:yyyy_MM_dd-HH_mm_ss}.zip");
 		}
 	}
 }

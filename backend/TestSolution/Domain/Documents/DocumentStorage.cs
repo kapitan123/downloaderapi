@@ -3,23 +3,27 @@ using TestSolution.Domain;
 using TestSolution.Infrastructrue.Persistance;
 using TestSolution.Infrastructrue.Web;
 
-namespace DocumentStore.Domain.DocumentUploader;
+namespace DocumentStore.Domain.Documents;
 
 public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentStore store, IMetadataRepository metaRepo)
 	: IDocumentStorage, IMetadataStorage, IZipper
 {
 	public async Task<(DocumentMeta Meta, Stream Content)> GetAsync(Guid id, CancellationToken token)
 	{
-		var meta = await metaRepo.GetAsync(id);
-		var content = await store.ReadAsync(meta.ContentAddress, default);
+		var metaTask = metaRepo.GetAsync(id);
+		var contentTask = store.ReadAsync(id, token);
+
+		Task.WaitAll([metaTask, contentTask], cancellationToken: token);
 
 		// We can limit the API to Get/Save operations and keep the increment logic in the domain object.
 		// However, the tradeoff would be slower performance and complex concurrency control.
 		// Currently, we do not provide a rollback of an increment if an upstream service fails.
 		// This functionality might be added later.
+		// Also this feature can be based on a batch event processing, substentially reducing write load on the db.
+		// Download events could also be used for analytics and forecasts.
 		await metaRepo.IncrementDownloads(id);
 
-		return (meta, content);
+		return (metaTask.Result, contentTask.Result);
 	}
 
 	/// <summary>
@@ -30,22 +34,24 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 	/// <returns>updated metada</returns>
 	public async Task SaveAsync(DocumentMeta meta, Stream content, CancellationToken token)
 	{
+		// We slightly optimise
 		using var fsGenerator = new MemoryStream();
 		using var fsStore = new MemoryStream();
 		using var fsTee = new TeeStream(fsGenerator, fsStore);
 
 		content.CopyTo(fsTee);
 
+		// It is not clear if we should offload this generation to Lambda.
+		// In the current implementation, we reuse the file stream which is already in memory, saving on I/O.
+		// However, asynchronous processing would be a better solution for availability,
+		// as preview generation is not a critical feature and can be retried in the background.
 		var previewGenTask = previewGenerator.GeneratePreview(fsGenerator, meta.ContentType, token);
 
-		var saveFileTask = store.SaveAsync(fsStore, token);
+		var saveFileTask = store.SaveAsync(meta.Id, meta.ContentType, fsStore, token);
 
 		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
 
-		// AK TODO probably I should not mutate it
-		// Add error handling to not fail if preview gen fails
-		meta.ContentAddress = saveFileTask.Result;
-
+		// It would make sense to emit an event after finishing the download.
 		await metaRepo.SaveAsync(meta);
 	}
 

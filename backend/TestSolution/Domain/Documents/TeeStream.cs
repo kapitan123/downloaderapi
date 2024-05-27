@@ -1,4 +1,4 @@
-﻿namespace DocumentStore.Domain.DocumentUploader;
+﻿namespace DocumentStore.Domain.Documents;
 
 public class TeeStream(Stream stream1, Stream stream2) : Stream
 {

@@ -11,11 +11,7 @@ public class DocumentMeta
 
 	public long Size { get; set; }
 
-	public string PreviewAddress { get; set; }
-
 	public DateTime UploadedOn { get; set; }
-
-	public string ContentAddress { get; set; }
 
 	public string UploadedBy { get; set; }
 

@@ -1,10 +1,10 @@
 ﻿namespace DocumentStore.Domain.PreviewGenerator;
 
-public class PreviewGenerator : IPreviewGenerator
+public class PreviewService : IPreviewGenerator
 {
 
 	public Dictionary<string, string> keyValuePairs = new();
-	public PreviewGenerator()
+	public PreviewService()
 	{
 
 	}
