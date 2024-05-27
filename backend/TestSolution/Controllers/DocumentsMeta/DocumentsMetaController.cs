@@ -1,4 +1,4 @@
-using DocumentStore.Domain.DocumentUploader;
+using DocumentStore.Domain.Documents;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TestSolution.Controllers
@@ -9,7 +9,7 @@ namespace TestSolution.Controllers
 	public class DocumentsMetaController(IMetadataStorage docStore, ILogger<DocumentsMetaController> logger) : ControllerBase
 	{
 
-		[HttpPost("documents/details", Name = "GetAllMeta")]
+		[HttpPost("documents/metadata", Name = "GetAllMeta")]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -17,7 +17,7 @@ namespace TestSolution.Controllers
 		{
 			try
 			{
-				var result = docStore.GetMetaOfAllDocuments();
+				var result = await docStore.GetMetaOfAllDocuments(token);
 				return Ok();
 			}
 			catch (Exception ex)

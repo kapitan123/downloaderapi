@@ -49,6 +49,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 
 		var saveFileTask = store.SaveAsync(meta.Id, meta.ContentType, fsStore, token);
 
+		// AK TODO add error swallowing for previewGenTask
 		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
 
 		// It would make sense to emit an event after finishing the download.
@@ -74,7 +75,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 		//return ms;
 	}
 
-	public Task<DocumentMeta> GetMetaOfAllDocuments()
+	public Task<DocumentMeta> GetMetaOfAllDocuments(CancellationToken token)
 	{
 		throw new NotImplementedException();
 	}
