@@ -4,7 +4,7 @@ using OneOf.Types;
 
 public interface IShareService
 {
-	Task<Uri> GetPublicUriFor(Guid documentId, int expirationInHours);
+	Task<Uri> GetPublicUriFor(Guid documentId, int expirationInHours, CancellationToken token);
 
-	Task<OneOf<Uri, Expired, NotFound>> GetDocumentByPublicId(Guid publicId);
+	Task<OneOf<Guid, Expired, NotFound>> GetDocumentIdByPublicId(Guid publicId, CancellationToken token);
 }

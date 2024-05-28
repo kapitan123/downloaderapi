@@ -1,4 +1,5 @@
 using DocumentStore.Controllers.Errors;
+using DocumentStore.Controllers.Validation;
 using DocumentStore.Domain.Documents;
 using DocumentStore.Domain.ShareabaleUrls;
 using Microsoft.AspNetCore.Mvc;
@@ -22,67 +23,60 @@ namespace DocumentStore.Controllers.Documents
 		public async Task<IActionResult> Upload([FromForm] UploadDocumentRequest req, CancellationToken token)
 		{
 			var file = req.File;
-			if (file == null)
+
+			var result = uploadValidator.Validate(file);
+
+			if (result.Value is ApiError err)
 			{
-				return BadRequest(ApiErrors.FileNotProvided);
+				return BadRequest(err);
 			}
 
-			if (file.Length == 0)
-			{
-				return BadRequest(ApiErrors.FileMustNotBeEmpty);
-			}
-			// AK TODOthis can be moved to validator itself
-			if (file.Length > uploadValidator.MaxSize)
-			{
-				return BadRequest("file is too big");
-			}
 
-			if (!uploadValidator.IsSupported(file.ContentType))
-			{
-				// AK TODO add rpoblem details
-				return BadRequest($"Contenttype {file.ContentType} is not supported. " +
-					$"Supported types are: {string.Join(" ,", uploadValidator.SupportedTypes)}");
-			}
-			try
-			{
-				var meta = req.ToMetaData();
+			var meta = req.ToMetaData();
 
-				await store.SaveAsync(meta, file.OpenReadStream(), token);
+			await store.SaveAsync(meta, file.OpenReadStream(), token);
 
-				return Created();
-			}
-			catch (Exception ex)
-			{
-				logger.LogError(ex, "Error occurred during the file upload.");
-				return StatusCode(500, "Internal Server Error");
-			}
+			return Created();
+
 		}
 
 		[HttpGet("{id}/share", Name = "Share")]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, int expiration, CancellationToken token)
+		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, int expirationInHours, CancellationToken token)
 		{
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
 			// Only how many times we generated a url download a link.
-			var uri = await shareService.GetPublicUriFor(id, expiration);
-			return Ok(uri);
+			// Also we assume there is basically no limit for expiration hours
+			var uri = await shareService.GetPublicUriFor(id, expirationInHours, token);
+
+			var resp = new ShareDocumentResponse()
+			{
+				Data = uri
+			};
+
+			return Ok(resp);
 		}
 
-		[HttpGet("shared/{id}/download", Name = "DownloadShared")]
+		[HttpGet("shared/{pudlicId}/download", Name = "DownloadShared")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status410Gone)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownloadFromShareUrl([FromRoute] Guid pudlicId, int expiration, CancellationToken token)
+		public async Task<IActionResult> DownloadFromShareUrl([FromRoute] Guid pudlicId, CancellationToken token)
 		{
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
 			// Only how many times we generated a url download a link.
-			var uri = await shareService.GetDocumentByPublicId(pudlicId);
-			return Ok(uri);
+			var result = await shareService.GetDocumentIdByPublicId(pudlicId, token);
+
+			return await result.Match<Task<IActionResult>>(
+				async docId => await DownLoadFile(docId, token),
+				async expired => new StatusCodeResult(StatusCodes.Status410Gone),
+				async notFound => NotFound());
 		}
 
 		[HttpGet("{id}", Name = "Download")]
@@ -98,7 +92,6 @@ namespace DocumentStore.Controllers.Documents
 			return File(content, meta.ContentType, meta.Name);
 		}
 
-		// AK TODO add versions to jsons should go to a metadata controller
 		[HttpGet("download-zip", Name = "DownloadZip")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -106,14 +99,16 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DownloadZip(List<Guid> ids, CancellationToken token)
 		{
-			if (ids?.Count < 1)
+			if (ids?.Count < 2)
 			{
-				return BadRequest("No document Ids were provided");
+				return BadRequest(ZipDownloadError.NotFilesToZip());
 			}
 
-			if (ids.Count > 10)
+			// This could be taken from setting.json
+			var maxFiles = 10;
+			if (ids.Count > maxFiles)
 			{
-				return BadRequest("The max number of zipped files is 10");
+				return BadRequest(ZipDownloadError.TooManyFilesToZip(maxFiles));
 			}
 
 			var zipStream = await zipper.GetZipedFiles(ids, token);
