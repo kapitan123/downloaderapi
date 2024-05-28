@@ -70,7 +70,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 			}
 		}
 
-		// Reset stream to start to allow read
+		// Reset stream to start to allow reads upstream
 		ms.Seek(0, SeekOrigin.Begin);
 
 		return ms;

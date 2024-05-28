@@ -5,11 +5,12 @@ using OneOf.Types;
 
 namespace DocumentStore.Controllers.Documents.Validation;
 
+// Could be done using something like FluentValidation, it's a matter of taste
 public class UploadValidator(IOptions<UploadValidatorSettings> options) : IUploadValidator
 {
 	private readonly UploadValidatorSettings _settings = options.Value;
 
-	// It's my preference to use OneOf in cases like this.
+	// It's my preference to use OneOf in cases like this instead of mutating class state or using a Result pattern
 	// Though I would stick to patterns established in an existing codebase.
 	public OneOf<Success, ApiError> Validate(IFormFile file)
 	{

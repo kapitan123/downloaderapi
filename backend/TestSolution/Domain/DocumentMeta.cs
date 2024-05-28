@@ -1,5 +1,6 @@
 ﻿namespace TestSolution.Domain;
 
+// It has no domain logic, so I skipped separating DB and Domain models
 public class DocumentMeta
 {
 	public Guid Id { get; set; }
@@ -14,6 +15,6 @@ public class DocumentMeta
 
 	public string UploadedBy { get; set; }
 
-	public int DownloadsCount { get; set; } // AK TODO should be immutable for the Domain object
+	public int DownloadsCount { get; set; }
 
 }

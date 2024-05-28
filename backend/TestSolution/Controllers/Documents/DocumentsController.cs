@@ -10,6 +10,8 @@ namespace DocumentStore.Controllers.Documents
 	[ApiController]
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/documents")]
+	// I prefer not use excessive abstraction/inderection like mediatR or UseCases/CQRS when the benefit is not clear.
+	// And work directly with domain services.
 	public class DocumentsController(IDocumentStorage store,
 		IShareService shareService,
 		IZipper zipper,
@@ -62,8 +64,8 @@ namespace DocumentStore.Controllers.Documents
 			return Ok(resp);
 		}
 
-		// Would be nice to have Status410Gone for expired links
-		// But it will require qustom expiration service 
+		// Would be nice to have a Status410Gone for expired links
+		// But it will require custom expiration service 
 		[HttpGet("shared/{pudlicId}/download", Name = "DownloadShared")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -73,7 +75,7 @@ namespace DocumentStore.Controllers.Documents
 		{
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
-			// Only how many times we generated a url download a link.
+			// Only how many times we generated a url download link.
 			var result = await shareService.GetDocumentIdByPublicId(pudlicId, token);
 
 			return await result.Match<Task<IActionResult>>(
