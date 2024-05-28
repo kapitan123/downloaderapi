@@ -1,4 +1,4 @@
-﻿namespace DocumentStore.Controllers.Validation;
+﻿namespace DocumentStore.Controllers.Documents.Validation;
 
 public class UploadValidatorSettings
 {

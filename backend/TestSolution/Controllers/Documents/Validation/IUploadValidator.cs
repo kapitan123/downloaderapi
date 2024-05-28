@@ -2,7 +2,7 @@
 using OneOf;
 using OneOf.Types;
 
-namespace DocumentStore.Controllers.Validation;
+namespace DocumentStore.Controllers.Documents.Validation;
 
 public interface IUploadValidator
 {

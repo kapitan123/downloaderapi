@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OneOf;
 using OneOf.Types;
 
-namespace DocumentStore.Controllers.Validation;
+namespace DocumentStore.Controllers.Documents.Validation;
 
 public class UploadValidator(IOptions<UploadValidatorSettings> options) : IUploadValidator
 {
@@ -23,7 +23,10 @@ public class UploadValidator(IOptions<UploadValidatorSettings> options) : IUploa
 			return FileUploadError.TooBig(_settings.FileSizeLimitInBytes);
 		}
 
-		if (!_settings.AllowedContentTypes.Contains(file.ContentType))
+		var type = file.FileName[(file.FileName.LastIndexOf('.') + 1)..];
+
+		// It is based on file estensions as any binary data can be represented by octet stream for example
+		if (!_settings.AllowedContentTypes.Contains(type))
 		{
 			return FileUploadError.ContentNotSupported(file.ContentType, _settings.AllowedContentTypes);
 		}

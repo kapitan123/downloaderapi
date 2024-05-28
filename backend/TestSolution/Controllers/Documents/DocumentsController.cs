@@ -1,6 +1,6 @@
 using Asp.Versioning;
+using DocumentStore.Controllers.Documents.Validation;
 using DocumentStore.Controllers.Errors;
-using DocumentStore.Controllers.Validation;
 using DocumentStore.Domain.Documents;
 using DocumentStore.Domain.ShareabaleUrls;
 using Microsoft.AspNetCore.Mvc;
