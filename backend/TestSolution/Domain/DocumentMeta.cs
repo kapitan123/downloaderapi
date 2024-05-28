@@ -1,6 +1,5 @@
 ﻿namespace TestSolution.Domain;
 
-// AK TODO should I try to do DDD at all?
 public class DocumentMeta
 {
 	public Guid Id { get; set; }

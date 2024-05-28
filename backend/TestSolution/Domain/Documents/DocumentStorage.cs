@@ -1,4 +1,5 @@
-﻿using DocumentStore.Domain.PreviewGenerator;
+﻿using System.IO.Compression;
+using DocumentStore.Domain.PreviewGenerator;
 using DocumentStore.Infrastructrue.MetadataPersistance;
 using TestSolution.Domain;
 using TestSolution.Infrastructrue.Web;
@@ -10,7 +11,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 {
 	public async Task<(DocumentMeta Meta, Stream Content)> GetAsync(Guid id, CancellationToken token)
 	{
-		var metaTask = metaRepo.GetAsync(id);
+		var metaTask = metaRepo.GetAsync(id, token);
 		var contentTask = store.ReadAsync(id, token);
 
 		Task.WaitAll([metaTask, contentTask], cancellationToken: token);
@@ -21,20 +22,14 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 		// This functionality might be added later.
 		// Also this feature can be based on a batch event processing, substentially reducing write load on the db.
 		// Download events could also be used for analytics and forecasts.
-		await metaRepo.IncrementDownloads(id);
+		await metaRepo.IncrementDownloads(id, token);
 
 		return (metaTask.Result, contentTask.Result);
 	}
 
-	/// <summary>
-	/// Uploads document
-	/// </summary>
-	/// <param name="fileContent"></param>
-	/// <param name="meta">metadata of the new document</param>
-	/// <returns>updated metada</returns>
 	public async Task SaveAsync(DocumentMeta meta, Stream content, CancellationToken token)
 	{
-		// We slightly optimise
+		// We slightly optimise removing repeated stream reads
 		using var fsGenerator = new MemoryStream();
 		using var fsStore = new MemoryStream();
 		using var fsTee = new TeeStream(fsGenerator, fsStore);
@@ -49,30 +44,36 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 
 		var saveFileTask = store.SaveAsync(meta.Id, meta.ContentType, fsStore, token);
 
-		// AK TODO add error swallowing for previewGenTask
 		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
 
 		// It would make sense to emit an event after finishing the download.
-		await metaRepo.SaveAsync(meta);
+		await metaRepo.SaveAsync(meta, token);
 	}
 
-	public Task<Stream> GetZipedFiles(IEnumerable<Guid> fileIds, CancellationToken token)
+	public async Task<Stream> GetZipedFiles(IEnumerable<Guid> fileIds, CancellationToken token)
 	{
-		throw new NotImplementedException();
+		var documentTasks = fileIds.Select(id => GetAsync(id, token)).ToList();
 
-		//using var ms = new MemoryStream();
-		//using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
-		//{
-		//	//QUery the Products table and get all image content  
-		//	_dbcontext.Products.ToList().ForEach(file =>
-		//	{
-		//		var entry = zip.CreateEntry(file.ProImageName);
-		//		using var fileStream = new MemoryStream(file.ProImageContent);
-		//		using var entryStream = entry.Open();
-		//		fileStream.CopyTo(entryStream);
-		//	});
-		//}
-		//return ms;
+		using var ms = new MemoryStream();
+
+		using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
+		{
+			var documents = await Task.WhenAll(documentTasks);
+
+			foreach (var (meta, content) in documents)
+			{
+				var entry = zip.CreateEntry(meta.Name, CompressionLevel.Optimal);
+
+				using var entryStream = entry.Open();
+				content.Seek(0, SeekOrigin.Begin);
+				await content.CopyToAsync(entryStream, token);
+			}
+		}
+
+		// Reset stream to start to allow read
+		ms.Seek(0, SeekOrigin.Begin);
+
+		return ms;
 	}
 
 	public Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token)
