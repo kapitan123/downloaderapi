@@ -15,10 +15,7 @@ public class PreviewsController(IPreviewViewer previewViewer, ILogger<PreviewsCo
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 	public async Task<IActionResult> GetAll([FromRoute] Guid documentId, CancellationToken token)
 	{
-		var (content, size) = await previewViewer.ViewForDocument(documentId, token);
-		Response.ContentLength = size;
-		Response.Headers.Append("Accept-Ranges", "bytes");
-		Response.Headers.Append("Content-Range", "bytes 0-" + size);
+		var content = await previewViewer.ViewForDocument(documentId, token);
 		return File(content, "image/jpeg", $"{documentId}-preview");
 	}
 }

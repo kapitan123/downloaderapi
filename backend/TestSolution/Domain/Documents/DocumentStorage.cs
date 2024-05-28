@@ -6,13 +6,13 @@ using TestSolution.Infrastructrue.Web;
 
 namespace DocumentStore.Domain.Documents;
 
-public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentStore store, IMetadataRepository metaRepo)
+public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementContentStore store, IMetadataRepository metaRepo)
 	: IDocumentStorage, IMetadataStorage, IZipper
 {
 	public async Task<(DocumentMeta Meta, Stream Content)> GetAsync(Guid id, CancellationToken token)
 	{
 		var metaTask = metaRepo.GetAsync(id, token);
-		var contentTask = store.ReadAsync(id, token);
+		var contentTask = store.ReadDocumentAsync(id, token);
 
 		Task.WaitAll([metaTask, contentTask], cancellationToken: token);
 
@@ -40,9 +40,9 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 		// In the current implementation, we reuse the file stream which is already in memory, saving on I/O.
 		// However, asynchronous processing would be a better solution for availability,
 		// as preview generation is not a critical feature and can be retried in the background.
-		var previewGenTask = previewGenerator.GeneratePreview(fsGenerator, meta.ContentType, token);
+		var previewGenTask = previewGenerator.GeneratePreview(meta.Id, fsGenerator, meta.ContentType, token);
 
-		var saveFileTask = store.SaveAsync(meta.Id, meta.ContentType, fsStore, token);
+		var saveFileTask = store.SaveDocumentAsync(meta.Id, meta.ContentType, fsStore, token);
 
 		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
 
@@ -76,8 +76,10 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 		return ms;
 	}
 
-	public Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token)
+	public async Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token)
 	{
-		throw new NotImplementedException();
+		var result = await metaRepo.GetAllAsync(token);
+
+		return result;
 	}
 }
