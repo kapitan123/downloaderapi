@@ -31,7 +31,6 @@ namespace DocumentStore.Controllers.Documents
 				return BadRequest(err);
 			}
 
-
 			var meta = req.ToMetaData();
 
 			await store.SaveAsync(meta, file.OpenReadStream(), token);
