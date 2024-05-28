@@ -1,19 +1,23 @@
-﻿using OneOf;
+﻿using DocumentStore.Infrastructrue.PublicLinksPersistance;
+using OneOf;
 using OneOf.Types;
 
 namespace DocumentStore.Domain.ShareabaleUrls;
 
-public class ShareService : IShareService
+public class ShareService(IPublicLinkStore store) : IShareService
 {
 	// I prefer to specify all expected results as a union so the upstream service 
 	// is forced to explicitly handle all of them
-	public Task<OneOf<Guid, Expired, NotFound>> GetDocumentIdByPublicId(Guid publicId, CancellationToken token)
+	public async Task<OneOf<Guid, NotFound>> GetDocumentIdByPublicId(string publicId, CancellationToken token)
 	{
-		throw new NotImplementedException();
+		return await store.Get(publicId, token);
 	}
 
-	public Task<Uri> GetPublicUriFor(Guid documentId, int expirationInHours, CancellationToken token)
+	public async Task<string> GenerateTempPublicIdFor(Guid documentId, int expirationInHours, CancellationToken token)
 	{
-		throw new NotImplementedException();
+		var newPublicId = "pub" + Guid.NewGuid();
+		await store.Save(newPublicId, documentId, expirationInHours, token);
+
+		return newPublicId;
 	}
 }

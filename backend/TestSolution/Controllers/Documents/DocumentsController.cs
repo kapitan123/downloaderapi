@@ -46,27 +46,30 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, int expirationInHours, CancellationToken token)
 		{
+			var location = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}");
+
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
 			// Only how many times we generated a url download a link.
 			// Also we assume there is basically no limit for expiration hours
-			var uri = await shareService.GetPublicUriFor(id, expirationInHours, token);
+			var publicId = await shareService.GenerateTempPublicIdFor(id, expirationInHours, token);
 
 			var resp = new ShareDocumentResponse()
 			{
-				Data = uri
+				Data = new Uri($"{location.AbsoluteUri}/shared/{publicId}/download")
 			};
 
 			return Ok(resp);
 		}
 
+		// Would be nice to have Status410Gone for expired links
+		// But it will require qustom expiration service 
 		[HttpGet("shared/{pudlicId}/download", Name = "DownloadShared")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status410Gone)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownloadFromShareUrl([FromRoute] Guid pudlicId, CancellationToken token)
+		public async Task<IActionResult> DownloadFromShareUrl([FromRoute] string pudlicId, CancellationToken token)
 		{
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
@@ -75,7 +78,6 @@ namespace DocumentStore.Controllers.Documents
 
 			return await result.Match<Task<IActionResult>>(
 				async docId => await DownLoadFile(docId, token),
-				async expired => new StatusCodeResult(StatusCodes.Status410Gone),
 				async notFound => NotFound());
 		}
 
