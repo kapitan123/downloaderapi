@@ -15,7 +15,8 @@ services:
       - AWS_DEFAULT_REGION=us-east-1
       - AWS_ACCESS_KEY_ID=xxx
       - AWS_SECRET_ACCESS_KEY=xxx
-  
+
+  # we can use amazon RDS and DynamoDB on local stack
   db:
     profiles: [infra, all]
     container_name: postgres
