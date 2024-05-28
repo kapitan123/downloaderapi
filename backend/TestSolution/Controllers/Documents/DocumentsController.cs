@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using DocumentStore.Controllers.Errors;
 using DocumentStore.Controllers.Validation;
 using DocumentStore.Domain.Documents;
@@ -6,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DocumentStore.Controllers.Documents
 {
-	// AK TODO add versioning
 	[ApiController]
-	[Route("api/documents")]
+	[ApiVersion("1.0")]
+	[Route("api/v{version:apiVersion}/documents")]
 	public class DocumentsController(IDocumentStorage store,
 		IShareService shareService,
 		IZipper zipper,

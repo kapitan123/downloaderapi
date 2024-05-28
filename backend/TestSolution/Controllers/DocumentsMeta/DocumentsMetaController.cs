@@ -1,16 +1,17 @@
+using Asp.Versioning;
 using DocumentStore.Controllers.DocumentsMeta;
 using DocumentStore.Domain.Documents;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TestSolution.Controllers
 {
-	// AK TODO add versioning
 	[ApiController]
-	[Route("api")]
+	[ApiVersion("1.0")]
+	[Route("apiapi/v{version:apiVersion}/documents")]
 	public class DocumentsMetaController(IMetadataStorage docStore, ILogger<DocumentsMetaController> logger) : ControllerBase
 	{
 		// Production version should have a coursor paging
-		[HttpPost("documents/metadata", Name = "GetAllMeta")]
+		[HttpPost("metadata", Name = "GetAllMeta")]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]

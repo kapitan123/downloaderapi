@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using DocumentStore.Infrastructrue.MetadataPersistance;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,21 @@ builder.Services.Configure<SqlSettingsOptions>(
 
 builder.Services.Configure<SqlSettingsOptions>(
 	builder.Configuration.GetSection(SqlSettingsOptions.Section));
+
+builder.Services.AddApiVersioning(options =>
+{
+	options.DefaultApiVersion = new ApiVersion(1, 0);
+	options.AssumeDefaultVersionWhenUnspecified = true;
+	options.ReportApiVersions = true;
+	options.ApiVersionReader = ApiVersionReader.Combine(
+		new QueryStringApiVersionReader("api-version"),
+		new HeaderApiVersionReader("X-Version"),
+		new MediaTypeApiVersionReader("ver"));
+}).AddApiExplorer(options =>
+	{
+		options.GroupNameFormat = "'v'VVV";
+		options.SubstituteApiVersionInUrl = true;
+	});
 
 var app = builder.Build();
 
