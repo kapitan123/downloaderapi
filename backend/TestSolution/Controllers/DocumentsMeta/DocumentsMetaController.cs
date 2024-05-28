@@ -1,3 +1,4 @@
+using DocumentStore.Controllers.DocumentsMeta;
 using DocumentStore.Domain.Documents;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,23 +9,20 @@ namespace TestSolution.Controllers
 	[Route("api")]
 	public class DocumentsMetaController(IMetadataStorage docStore, ILogger<DocumentsMetaController> logger) : ControllerBase
 	{
-
+		// Production version should have a coursor paging
 		[HttpPost("documents/metadata", Name = "GetAllMeta")]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> GetAll(CancellationToken token)
 		{
-			try
+			var result = await docStore.GetMetaOfAllDocuments(token);
+			var resp = new GetDocumentsMetadataResult
 			{
-				var result = await docStore.GetMetaOfAllDocuments(token);
-				return Ok();
-			}
-			catch (Exception ex)
-			{
-				logger.LogError(ex, "Error occurred during fetching all documents meta.");
-				return StatusCode(500, "Internal Server Error");
-			}
+				Data = result
+			};
+
+			return Ok(resp);
 		}
 	}
 }

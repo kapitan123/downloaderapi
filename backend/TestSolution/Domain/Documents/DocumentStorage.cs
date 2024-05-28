@@ -75,7 +75,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IFileContentSto
 		//return ms;
 	}
 
-	public Task<DocumentMeta> GetMetaOfAllDocuments(CancellationToken token)
+	public Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token)
 	{
 		throw new NotImplementedException();
 	}

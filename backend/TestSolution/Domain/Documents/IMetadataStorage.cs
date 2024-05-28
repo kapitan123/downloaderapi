@@ -4,5 +4,5 @@ namespace DocumentStore.Domain.Documents;
 
 public interface IMetadataStorage
 {
-	Task<DocumentMeta> GetMetaOfAllDocuments(CancellationToken token);
+	Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token);
 }
