@@ -25,18 +25,26 @@ public class MetadataRepository(DocumentsMetaDbContext context) : IMetadataRepos
 
 	// This method does relies on a proper transaction isolation level
 	// and would not work with the default Read_Comitted
+	// appliaction level locking would not help if we plan to have any kind of redundancy 
 	public async Task IncrementDownloads(Guid id, CancellationToken token)
 	{
-		using var transaction = context.Database.BeginTransaction();
+		try
+		{
+			using var transaction = context.Database.BeginTransaction();
 
-		var doc = await documentMetas
-			.FirstAsync(e => e.Id == id,
-		token);
+			var doc = await documentMetas
+				.FirstAsync(e => e.Id == id,
+			token);
 
-		doc.IncrementDownloads();
+			doc.IncrementDownloads();
 
-		documentMetas.Update(doc);
-		await context.SaveChangesAsync(token);
+			documentMetas.Update(doc);
+			await context.SaveChangesAsync(token);
+		}
+		catch (DbUpdateConcurrencyException)
+		{
+			// we should have some kind of a retry logic here
+		}
 	}
 
 	public async Task SaveAsync(DocumentMeta document, CancellationToken token)
@@ -50,9 +58,10 @@ public class MetadataRepository(DocumentsMetaDbContext context) : IMetadataRepos
 			await documentMetas.AddAsync(document, token);
 			await context.SaveChangesAsync(token);
 		}
-		catch (DbUpdateConcurrencyException exception)
+		catch (DbUpdateConcurrencyException)
 		{
 			// we should have some kind of a retry logic here
+
 		}
 	}
 }
