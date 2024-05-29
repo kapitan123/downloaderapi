@@ -78,6 +78,7 @@ namespace DocumentStore.Controllers.Documents
 			// Only how many times we generated a url download link.
 			var result = await shareService.GetDocumentIdByPublicId(pudlicId, token);
 
+			// This is my preferred way to handle cases like NotFound
 			return await result.Match<Task<IActionResult>>(
 				async docId => await DownLoadFile(docId, token),
 				async notFound => NotFound());
@@ -86,16 +87,27 @@ namespace DocumentStore.Controllers.Documents
 		[HttpGet("{id}", Name = "Download")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DownLoadFile(Guid id, CancellationToken token)
 		{
-			var (meta, content) = await store.GetAsync(id, token);
-			Response.ContentLength = meta.Size;
-			Response.Headers.Append("Accept-Ranges", "bytes");
-			Response.Headers.Append("Content-Range", "bytes 0-" + meta.Size);
-			return File(content, meta.ContentType, meta.Name);
+			// This method uses one of conventional ways to handle NotFound cases
+			try
+			{
+				var (meta, content) = await store.GetAsync(id, token);
+				Response.ContentLength = meta.Size;
+				Response.Headers.Append("Accept-Ranges", "bytes");
+				Response.Headers.Append("Content-Range", "bytes 0-" + meta.Size);
+				return File(content, meta.ContentType, meta.Name);
+			}
+			catch (KeyNotFoundException)
+			{
+				return NotFound();
+			}
 		}
 
+		// DownloadZip does not have an error handlung branch for missing documents
+		// In this case we treat any missing file as a complete failure
 		[HttpGet("download-zip", Name = "DownloadZip")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -110,14 +122,21 @@ namespace DocumentStore.Controllers.Documents
 
 			// This could be taken from setting.json
 			var maxFiles = 10;
+
 			if (ids.Count > maxFiles)
 			{
 				return BadRequest(ZipDownloadError.TooManyFilesToZip(maxFiles));
 			}
+			try
+			{
+				var zipStream = await zipper.GetZipedFiles(ids, token);
 
-			var zipStream = await zipper.GetZipedFiles(ids, token);
-
-			return File(zipStream, "application/zip", $"{DateTime.Now:yyyy_MM_dd-HH_mm_ss}.zip");
+				return File(zipStream, "application/zip", $"{DateTime.Now:yyyy_MM_dd-HH_mm_ss}.zip");
+			}
+			catch (KeyNotFoundException)
+			{
+				return BadRequest();
+			}
 		}
 	}
 }

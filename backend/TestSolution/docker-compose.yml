@@ -16,11 +16,10 @@ services:
       - AWS_ACCESS_KEY_ID=xxx
       - AWS_SECRET_ACCESS_KEY=xxx
 
-  # we can use amazon RDS and DynamoDB on local stack
+  # we can use amazon RDS and DynamoDB instead of bare postgress and redis
   db:
     profiles: [infra, all]
     container_name: postgres
-
     image: postgres
     environment:
       POSTGRES_USER: postgres

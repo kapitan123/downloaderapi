@@ -17,4 +17,9 @@ public class DocumentMeta
 
 	public int DownloadsCount { get; set; }
 
+	public void IncrementDownloads()
+	{
+		DownloadsCount++;
+	}
+
 }
