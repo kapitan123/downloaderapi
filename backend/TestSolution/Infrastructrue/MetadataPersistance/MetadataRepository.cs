@@ -61,7 +61,6 @@ public class MetadataRepository(DocumentsMetaDbContext context) : IMetadataRepos
 		catch (DbUpdateConcurrencyException)
 		{
 			// we should have some kind of a retry logic here
-
 		}
 	}
 }
