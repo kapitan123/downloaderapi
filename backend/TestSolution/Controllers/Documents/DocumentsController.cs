@@ -10,7 +10,7 @@ namespace DocumentStore.Controllers.Documents
 	[ApiVersion("1.0")]
 	[Route("api/v{version:apiVersion}/documents")]
 	// I prefer not use excessive abstraction/inderection like mediatR or UseCases/CQRS when the benefit is not clear.
-	// And work directly with domain services.
+	// And work directly with domain services as long as it's convinient and clear
 	public class DocumentsController(IDocumentStorage store,
 		IShareService shareService,
 		IZipper zipper,

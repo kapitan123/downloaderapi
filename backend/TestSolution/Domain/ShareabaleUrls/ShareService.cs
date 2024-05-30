@@ -6,10 +6,10 @@ namespace DocumentStore.Domain.ShareabaleUrls;
 
 public class ShareService(IPublicLinkRepository repo) : IShareService
 {
-	// I prefer to specify all expected results as a union so the upstream service 
-	// is forced to explicitly handle all of them
-	// for example if we introduce a new error for Expired results like this OneOf<Guid, Expired, NotFound>
+	// I prefer to specify all expected results as a union so the upstream service is forced to explicitly handle all of them
+	// for example if we introduce a new error for AccessRestricted results like this OneOf<Guid, Expired, AccessRestricted, NotFound>
 	// app will not compile until we add handling logic in consumers
+	// in my opinion this pattern is more explicit than a Result monad, but sometimes the list of expected types gets too long
 	public async Task<OneOf<Guid, Expired, NotFound>> GetDocumentIdByPublicId(string publicId, CancellationToken token)
 	{
 		var result = await repo.Get(publicId, token);
