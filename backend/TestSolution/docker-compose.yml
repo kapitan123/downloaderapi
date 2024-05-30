@@ -16,7 +16,7 @@ services:
       - AWS_ACCESS_KEY_ID=xxx
       - AWS_SECRET_ACCESS_KEY=xxx
 
-  # we can use amazon RDS and DynamoDB instead of bare postgress and redis
+  # we can use amazon RDS instead of bare postgress 
   db:
     profiles: [infra, all]
     container_name: postgres
@@ -28,13 +28,6 @@ services:
       - "5432:5432"
     volumes:
       - "./local/sql:/docker-entrypoint-initdb.d"
- 
-  redis:
-    profiles: [infra, all]
-    container_name: redis
-    image: redis
-    ports:
-      - "6379:6379"
 
   documents-api:
     profiles: [all]
