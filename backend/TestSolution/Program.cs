@@ -11,9 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder
-	.AddS3()
-	.AddDb()
 	.AddDocumentsStore()
+	.AddPreviewGeneration()
 	.AddPreviewGeneration();
 
 builder.Services.AddApiVersioning(options =>
