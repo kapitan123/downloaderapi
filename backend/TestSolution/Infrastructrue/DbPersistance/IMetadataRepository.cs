@@ -1,4 +1,4 @@
-﻿using TestSolution.Domain;
+﻿using DocumentStore.Domain.Documents;
 
 namespace DocumentStore.Infrastructrue.MetadataPersistance;
 

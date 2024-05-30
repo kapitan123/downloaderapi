@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TestSolution.Domain;
+﻿using DocumentStore.Domain.Documents;
+using Microsoft.EntityFrameworkCore;
 
 namespace DocumentStore.Infrastructrue.MetadataPersistance;
 

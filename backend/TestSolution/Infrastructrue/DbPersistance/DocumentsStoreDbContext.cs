@@ -1,6 +1,6 @@
-﻿using DocumentStore.Domain;
+﻿using DocumentStore.Domain.Documents;
+using DocumentStore.Domain.ShareabaleUrls;
 using Microsoft.EntityFrameworkCore;
-using TestSolution.Domain;
 
 namespace DocumentStore.Infrastructrue.MetadataPersistance;
 

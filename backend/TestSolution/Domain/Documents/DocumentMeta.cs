@@ -1,4 +1,4 @@
-﻿namespace TestSolution.Domain;
+﻿namespace DocumentStore.Domain.Documents;
 
 // It has no domain logic, so I skipped separating DB and Domain models
 public class DocumentMeta

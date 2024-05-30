@@ -1,6 +1,4 @@
-﻿using TestSolution.Domain;
-
-namespace DocumentStore.Domain.Documents;
+﻿namespace DocumentStore.Domain.Documents;
 
 public interface IMetadataStorage
 {

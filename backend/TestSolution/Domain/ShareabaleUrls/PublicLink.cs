@@ -1,4 +1,4 @@
-﻿namespace DocumentStore.Domain;
+﻿namespace DocumentStore.Domain.ShareabaleUrls;
 
 public class PublicLink
 {

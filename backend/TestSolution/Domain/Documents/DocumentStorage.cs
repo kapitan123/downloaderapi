@@ -1,7 +1,6 @@
 ﻿using System.IO.Compression;
 using DocumentStore.Domain.PreviewGenerator;
 using DocumentStore.Infrastructrue.MetadataPersistance;
-using TestSolution.Domain;
 using TestSolution.Infrastructrue.Web;
 
 namespace DocumentStore.Domain.Documents;

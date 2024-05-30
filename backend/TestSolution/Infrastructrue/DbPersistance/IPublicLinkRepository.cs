@@ -1,4 +1,4 @@
-﻿using DocumentStore.Domain;
+﻿using DocumentStore.Domain.ShareabaleUrls;
 using OneOf;
 using OneOf.Types;
 
