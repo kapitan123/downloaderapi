@@ -1,5 +1,4 @@
-﻿using DocumentStore.Controllers.Errors;
-using OneOf;
+﻿using OneOf;
 using OneOf.Types;
 
 namespace DocumentStore.Controllers.Documents.Validation;

@@ -1,4 +1,4 @@
-﻿namespace DocumentStore.Controllers.Errors;
+﻿namespace DocumentStore.Controllers;
 
 public record ApiError(string Code, string Description);
 

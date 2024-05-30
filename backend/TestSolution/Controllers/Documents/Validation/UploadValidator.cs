@@ -1,5 +1,4 @@
-﻿using DocumentStore.Controllers.Errors;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using OneOf;
 using OneOf.Types;
 
