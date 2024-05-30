@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DocumentStore.Infrastructrue.MetadataPersistance;
 
-public class PublicLinkRepository(DbContext context) : IMetadataRepository
+public class MetadataRepository(DbContext context) : IMetadataRepository
 {
 	private readonly DbSet<DocumentMeta> documentMetas = context.Set<DocumentMeta>();
 

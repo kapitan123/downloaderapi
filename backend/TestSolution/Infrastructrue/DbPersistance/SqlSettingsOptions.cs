@@ -2,7 +2,6 @@
 
 public class SqlSettingsOptions
 {
-	public static string Section => "TestHttpClient";
-	public string Url { get; set; } = "";
-	public string ApiKey { get; set; } = "";
+	public static string Section => "Sql";
+	public string ConnectionString { get; set; } = "";
 }

@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using DocumentStore.Infrastructrue.DbPersistance;
+using DocumentStore.ServiceCollectionExtensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,13 +10,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<SqlSettingsOptions>(
-	builder.Configuration.GetSection(SqlSettingsOptions.Section));
+builder
+	.AddS3()
+	.AddDb()
+	.AddDocumentsStore()
+	.AddPreviewGeneration();
 
-builder.Services.Configure<SqlSettingsOptions>(
-	builder.Configuration.GetSection(SqlSettingsOptions.Section));
-
-// AK TODO register dependancies
 builder.Services.AddApiVersioning(options =>
 {
 	options.DefaultApiVersion = new ApiVersion(1, 0);
