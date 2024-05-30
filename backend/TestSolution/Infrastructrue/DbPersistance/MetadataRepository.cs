@@ -3,14 +3,13 @@ using TestSolution.Domain;
 
 namespace DocumentStore.Infrastructrue.MetadataPersistance;
 
-// AK Todo it is explicitly configured 
-public class MetadataRepository(DocumentsMetaDbContext context) : IMetadataRepository
+public class PublicLinkRepository(DbContext context) : IMetadataRepository
 {
 	private readonly DbSet<DocumentMeta> documentMetas = context.Set<DocumentMeta>();
 
-	public Task<List<DocumentMeta>> GetAllAsync(CancellationToken token)
+	public async Task<List<DocumentMeta>> GetAllAsync(CancellationToken token)
 	{
-		throw new NotImplementedException();
+		return await documentMetas.ToListAsync(token);
 	}
 
 	public async Task<DocumentMeta> GetAsync(Guid id, CancellationToken token)

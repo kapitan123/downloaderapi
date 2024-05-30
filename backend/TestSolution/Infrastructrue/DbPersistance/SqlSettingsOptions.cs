@@ -1,4 +1,4 @@
-﻿namespace DocumentStore.Infrastructrue.MetadataPersistance;
+﻿namespace DocumentStore.Infrastructrue.DbPersistance;
 
 public class SqlSettingsOptions
 {

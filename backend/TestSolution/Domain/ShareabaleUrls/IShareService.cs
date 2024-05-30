@@ -6,5 +6,5 @@ public interface IShareService
 {
 	Task<string> GenerateTempPublicIdFor(Guid documentId, int expirationInHours, CancellationToken token);
 
-	Task<OneOf<Guid, NotFound>> GetDocumentIdByPublicId(string publicId, CancellationToken token);
+	Task<OneOf<Guid, Expired, NotFound>> GetDocumentIdByPublicId(string publicId, CancellationToken token);
 }

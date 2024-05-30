@@ -64,12 +64,11 @@ namespace DocumentStore.Controllers.Documents
 			return Ok(resp);
 		}
 
-		// Would be nice to have a Status410Gone for expired links
-		// But it will require custom expiration service 
 		[HttpGet("shared/{pudlicId}/download", Name = "DownloadShared")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status410Gone)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DownloadFromShareUrl([FromRoute] string pudlicId, CancellationToken token)
 		{
@@ -81,6 +80,7 @@ namespace DocumentStore.Controllers.Documents
 			// This is my preferred way to handle cases like NotFound
 			return await result.Match<Task<IActionResult>>(
 				async docId => await DownLoadFile(docId, token),
+				async expired => StatusCode(StatusCodes.Status410Gone),
 				async notFound => NotFound());
 		}
 

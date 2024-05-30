@@ -1,5 +1,5 @@
 using Asp.Versioning;
-using DocumentStore.Infrastructrue.MetadataPersistance;
+using DocumentStore.Infrastructrue.DbPersistance;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +16,7 @@ builder.Services.Configure<SqlSettingsOptions>(
 builder.Services.Configure<SqlSettingsOptions>(
 	builder.Configuration.GetSection(SqlSettingsOptions.Section));
 
+// AK TODO register dependancies
 builder.Services.AddApiVersioning(options =>
 {
 	options.DefaultApiVersion = new ApiVersion(1, 0);

@@ -1,25 +1,42 @@
-﻿using DocumentStore.Infrastructrue.PublicLinksPersistance;
+﻿using DocumentStore.Infrastructrue.DbPersistance;
 using OneOf;
 using OneOf.Types;
 
 namespace DocumentStore.Domain.ShareabaleUrls;
 
-public class ShareService(IPublicLinkStore store) : IShareService
+public class ShareService(IPublicLinkRepository repo) : IShareService
 {
 	// I prefer to specify all expected results as a union so the upstream service 
 	// is forced to explicitly handle all of them
 	// for example if we introduce a new error for Expired results like this OneOf<Guid, Expired, NotFound>
 	// app will not compile until we add handling logic in consumers
-	public async Task<OneOf<Guid, NotFound>> GetDocumentIdByPublicId(string publicId, CancellationToken token)
+	public async Task<OneOf<Guid, Expired, NotFound>> GetDocumentIdByPublicId(string publicId, CancellationToken token)
 	{
-		return await store.Get(publicId, token);
+		var result = await repo.Get(publicId, token);
+
+		return result.Match<OneOf<Guid, Expired, NotFound>>(
+			// DateTime.UtcNo should be injected with TimeProvider
+			pl => pl.ExpiresOn > DateTime.UtcNow ? pl.DocumentId : new Expired(),
+			notFound => notFound);
 	}
 
 	public async Task<string> GenerateTempPublicIdFor(Guid documentId, int expirationInHours, CancellationToken token)
 	{
 		var newPublicId = "pub-" + Guid.NewGuid();
-		await store.Save(newPublicId, documentId, expirationInHours, token);
+
+		var publicLink = new PublicLink
+		{
+			Id = "pub-" + Guid.NewGuid(),
+			DocumentId = documentId,
+			CreatedOn = DateTime.UtcNow,
+			// As timeframes are big we don't care about minor clock skew
+			ExpiresOn = DateTime.UtcNow.AddHours(expirationInHours),
+		};
+
+		await repo.Save(publicLink, token);
 
 		return newPublicId;
 	}
 }
+
+public record Expired();
