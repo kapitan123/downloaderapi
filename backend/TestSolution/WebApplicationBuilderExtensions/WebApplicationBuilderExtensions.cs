@@ -9,6 +9,7 @@ using DocumentStore.Domain.ShareabaleUrls;
 using DocumentStore.Infrastructrue.DbPersistance;
 using DocumentStore.Infrastructrue.FileSystem;
 using DocumentStore.Infrastructrue.MetadataPersistance;
+using Microsoft.EntityFrameworkCore;
 using TestSolution.Infrastructrue.Web;
 
 namespace DocumentStore.ServiceCollectionExtensions;
@@ -20,11 +21,8 @@ public static class WebApplicationBuilderExtensions
 {
 	public static WebApplicationBuilder AddInfra(this WebApplicationBuilder builder)
 	{
-		builder.Services.Configure<SqlSettingsOptions>(
-			builder.Configuration.GetSection(SqlSettingsOptions.Section));
-
-		builder.Services.Configure<SqlSettingsOptions>(
-			builder.Configuration.GetSection(SqlSettingsOptions.Section));
+		builder.Services.Configure<SqlSettings>(
+			builder.Configuration.GetSection(SqlSettings.Section));
 
 		builder.Services.Configure<S3Settings>(
 			builder.Configuration.GetSection(S3Settings.Section));
@@ -44,6 +42,10 @@ public static class WebApplicationBuilderExtensions
 				ForcePathStyle = true
 			});
 		});
+
+		var sqlSettings = builder.Configuration.GetSection(SqlSettings.Section).Get<SqlSettings>();
+		builder.Services.AddDbContext<DocumentsStoreDbContext>(options =>
+			options.UseNpgsql(sqlSettings.ConnectionString));
 
 		builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
 
