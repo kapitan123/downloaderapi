@@ -1,5 +1,3 @@
-# downloaderapi
-
 # How to run
 ## Run
 * Install docker <a href="https://docs.docker.com/desktop/">Docker engine and Compose plugin</a></br>
