@@ -13,11 +13,11 @@
 * Run `dotnet run --project DocumentStore.csproj`
 
 # Design choices
-The application uses a lighter version of Clean Architecture and incorporates some elements of Domain-Driven Design (DDD). 
-I decided not to employ complex abstraction and indirection, keeping the application only three layers deep. 
-I split the project by layers to make it easier to review, as it is a more conventional approach. 
-The project can be easily regrouped by feature if necessary. 
-I simplified the implementation by removing authentication, preview generation, retries, and other features to reduce the task's scope.
+* The application uses a lighter version of Clean Architecture and incorporates some elements of Domain-Driven Design (DDD). 
+* I decided not to employ complex abstraction and indirection, keeping the application only three layers deep. 
+* I split the project by layers to make it easier to review, as it is a more conventional approach. 
+* The project can be easily regrouped by feature if necessary. 
+* I simplified the implementation by removing authentication, preview generation, retries, and other features to reduce the task's scope.
 
 # Ideas
 * Add proper Ci/CD pieplines
