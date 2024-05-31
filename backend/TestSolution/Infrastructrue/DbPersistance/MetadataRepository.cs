@@ -26,7 +26,7 @@ public class MetadataRepository(DbContext context) : IMetadataRepository
 	// This method does relies on a proper transaction isolation level
 	// and would not work with the default Read_Comitted
 	// appliaction level locking would not help if we plan to have any kind of redundancy 
-	public async Task IncrementDownloads(Guid id, CancellationToken token)
+	public async Task IncrementDownloadsAsync(Guid id, CancellationToken token)
 	{
 		try
 		{

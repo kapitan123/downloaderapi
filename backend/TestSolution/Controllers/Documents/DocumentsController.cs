@@ -161,7 +161,7 @@ namespace DocumentStore.Controllers.Documents
 			}
 			try
 			{
-				var zipStream = await zipper.GetZipedFiles(ids, token);
+				var zipStream = await zipper.GetZipedFilesAsync(ids, token);
 
 				return File(zipStream, "application/zip", $"{DateTime.Now:yyyy_MM_dd-HH_mm_ss}.zip");
 			}

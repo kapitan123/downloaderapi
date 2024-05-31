@@ -21,7 +21,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		// This functionality might be added later.
 		// Also this feature can be based on a batch event processing, substentially reducing write load on the db.
 		// Download events could also be used for analytics and forecasts.
-		await metaRepo.IncrementDownloads(id, token);
+		await metaRepo.IncrementDownloadsAsync(id, token);
 
 		return (metaTask.Result, contentTask.Result);
 	}
@@ -39,7 +39,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		// In the current implementation, we reuse the file stream which is already in memory, saving on I/O.
 		// However, asynchronous processing would be a better solution for availability,
 		// as preview generation is not a critical feature and can be retried in the background.
-		var previewGenTask = previewGenerator.GeneratePreview(meta.Id, fsGenerator, meta.ContentType, token);
+		var previewGenTask = previewGenerator.GeneratePreviewAsync(meta.Id, fsGenerator, meta.ContentType, token);
 
 		var saveFileTask = store.SaveDocumentAsync(meta.Id, meta.ContentType, fsStore, token);
 
@@ -49,7 +49,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		await metaRepo.SaveAsync(meta, token);
 	}
 
-	public async Task<Stream> GetZipedFiles(IEnumerable<Guid> fileIds, CancellationToken token)
+	public async Task<Stream> GetZipedFilesAsync(IEnumerable<Guid> fileIds, CancellationToken token)
 	{
 		var documentTasks = fileIds.Select(id => GetAsync(id, token)).ToList();
 
@@ -75,7 +75,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		return ms;
 	}
 
-	public async Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token)
+	public async Task<List<DocumentMeta>> GetMetaOfAllDocumentsAsync(CancellationToken token)
 	{
 		var result = await metaRepo.GetAllAsync(token);
 
@@ -98,7 +98,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 
 		var content = await store.ReadDocumentAsync(id, token);
 
-		await metaRepo.IncrementDownloads(id, token);
+		await metaRepo.IncrementDownloadsAsync(id, token);
 
 		return (meta, content);
 

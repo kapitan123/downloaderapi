@@ -17,7 +17,7 @@ namespace TestSolution.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> GetAll(CancellationToken token)
 		{
-			var result = await docStore.GetMetaOfAllDocuments(token);
+			var result = await docStore.GetMetaOfAllDocumentsAsync(token);
 			var resp = new GetDocumentsMetadataResult
 			{
 				Data = result

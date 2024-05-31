@@ -2,5 +2,5 @@
 
 public interface IPreviewGenerator
 {
-	Task GeneratePreview(Guid documentId, Stream file, string contentType, CancellationToken token);
+	Task GeneratePreviewAsync(Guid documentId, Stream file, string contentType, CancellationToken token);
 }

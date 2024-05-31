@@ -6,7 +6,7 @@ public interface IMetadataRepository
 {
 	public Task<DocumentMeta> GetAsync(Guid id, CancellationToken token);
 
-	public Task IncrementDownloads(Guid id, CancellationToken token);
+	public Task IncrementDownloadsAsync(Guid id, CancellationToken token);
 
 	public Task<List<DocumentMeta>> GetAllAsync(CancellationToken token);
 

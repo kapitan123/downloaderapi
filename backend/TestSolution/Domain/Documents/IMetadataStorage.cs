@@ -2,5 +2,5 @@
 
 public interface IMetadataStorage
 {
-	Task<List<DocumentMeta>> GetMetaOfAllDocuments(CancellationToken token);
+	Task<List<DocumentMeta>> GetMetaOfAllDocumentsAsync(CancellationToken token);
 }

@@ -2,5 +2,5 @@
 
 public interface IZipper
 {
-	Task<Stream> GetZipedFiles(IEnumerable<Guid> fileIds, CancellationToken token);
+	Task<Stream> GetZipedFilesAsync(IEnumerable<Guid> fileIds, CancellationToken token);
 }
