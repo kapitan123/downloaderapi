@@ -4,8 +4,8 @@
 
 ## How to run
 * Install docker <a href="https://docs.docker.com/desktop/">Docker engine and docker compose</a></br>
-* Run `docker compose -p all up` from `./backend/TestSolution`
-* Open swagger on localhost:5062 <a href="http://localhost:5062/swagger/index.html">this link</a> 
+* Run `docker compose --profile all up` from `./backend/TestSolution`
+* Open swagger on localhost:5062 <a href="http://localhost:5204/swagger/index.html">this link</a> 
 
 # Design choices
 The application uses a lighter version of Clean Architecture and incorporates some elements of Domain-Driven Design (DDD). 

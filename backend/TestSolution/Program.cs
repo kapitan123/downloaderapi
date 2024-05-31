@@ -22,8 +22,6 @@ builder.Services.AddApiVersioning(options =>
 	options.AssumeDefaultVersionWhenUnspecified = true;
 	options.ReportApiVersions = true;
 	options.ApiVersionReader = ApiVersionReader.Combine(
-		new QueryStringApiVersionReader("api-version"),
-		new HeaderApiVersionReader("X-Version"),
 		new MediaTypeApiVersionReader("ver"));
 }).AddApiExplorer(options =>
 	{

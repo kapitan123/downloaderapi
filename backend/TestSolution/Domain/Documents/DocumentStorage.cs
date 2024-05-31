@@ -13,7 +13,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		var metaTask = metaRepo.GetAsync(id, token);
 		var contentTask = store.ReadDocumentAsync(id, token);
 
-		Task.WaitAll([metaTask, contentTask], cancellationToken: token);
+		await Task.WhenAll([metaTask, contentTask]);
 
 		// We can limit the API to Get/Save operations and keep the increment logic in the domain object.
 		// However, the tradeoff would be slower performance and complex concurrency control.
@@ -43,7 +43,7 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 
 		var saveFileTask = store.SaveDocumentAsync(meta.Id, meta.ContentType, fsStore, token);
 
-		Task.WaitAll([previewGenTask, saveFileTask], cancellationToken: token);
+		await Task.WhenAll([previewGenTask, saveFileTask]);
 
 		// It would make sense to emit an event after finishing the download.
 		await metaRepo.SaveAsync(meta, token);
