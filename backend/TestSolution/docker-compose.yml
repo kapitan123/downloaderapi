@@ -4,19 +4,20 @@ services:
   localstack:
     profiles: [infra, all]
     container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
-    build:
-      context: ./local/
-      dockerfile: ./localstack.Dockerfile
+    image: localstack/localstack:latest
     ports:
-      - "4566:4566"         
+      - "4566:4566"  # Edge port
+      - "4572:4572"  # S3 service port
     environment:
       - SERVICES=s3
       - DEBUG=${DEBUG:-0}
       - AWS_DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=xxx
-      - AWS_SECRET_ACCESS_KEY=xxx
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    volumes:
+      - "./localstack:/tmp/localstack"
 
-  # we can use amazon RDS instead of bare postgress 
+  # We can use amazon RDS instead of bare postgress 
   db:
     profiles: [infra, all]
     container_name: postgres
@@ -27,11 +28,11 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - "./local/sql:/docker-entrypoint-initdb.d"
+      - "./sql-migrations:/docker-entrypoint-initdb.d"
 
   documents-api:
     profiles: [all]
     container_name: documents-api
-    image: documents-api
+    image: kapitan123/documents-api:latest
     ports:
       - "80:80"

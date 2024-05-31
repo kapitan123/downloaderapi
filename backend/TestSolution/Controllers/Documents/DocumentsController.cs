@@ -50,7 +50,6 @@ namespace DocumentStore.Controllers.Documents
 			// This method uses one of conventional ways to handle NotFound cases
 			try
 			{
-
 				var (meta, content) = await store.GetAsync(id, token);
 				Response.ContentLength = meta.Size;
 				Response.Headers.Append("Accept-Ranges", "bytes");
