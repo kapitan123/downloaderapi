@@ -6,7 +6,7 @@ public class UploadDocumentRequest
 {
 	public IFormFile File { get; set; }
 
-	public string UploadedBy { get; set; } // AK TODO I put user data inside the request to not overlycomplicate task with authentication
+	public string UploadedBy { get; set; } // I put user data inside the request to not overlycomplicate task with authentication
 }
 
 public static class UploadDocumentRequestExtensions

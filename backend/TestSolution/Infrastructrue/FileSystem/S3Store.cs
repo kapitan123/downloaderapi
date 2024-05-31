@@ -14,7 +14,7 @@ public class S3Store(
 
 {
 	private readonly string _documentBucket = options.Value.DocumentsBucket;
-	private readonly string _previewBucket = options.Value.DocumentsBucket;
+	private readonly string _previewBucket = options.Value.PreviewsBucket;
 
 	public async Task SaveDocumentAsync(Guid id, string contentType, Stream fileStream, CancellationToken token)
 	{
@@ -38,8 +38,7 @@ public class S3Store(
 			Key = id.ToString()
 		};
 
-		// AK TODO this shit might be disposed
-		using var response = await s3Client.GetObjectAsync(request, token);
+		var response = await s3Client.GetObjectAsync(request, token);
 		return response.ResponseStream;
 	}
 
@@ -65,8 +64,7 @@ public class S3Store(
 			Key = id.ToString()
 		};
 
-		// AK TODO this shit might be disposed
-		using var response = await s3Client.GetObjectAsync(request, token);
+		var response = await s3Client.GetObjectAsync(request, token);
 		return response.ResponseStream;
 	}
 }

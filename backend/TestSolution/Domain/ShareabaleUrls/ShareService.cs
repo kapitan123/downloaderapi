@@ -26,7 +26,7 @@ public class ShareService(IPublicLinkRepository repo) : IShareService
 
 		var publicLink = new PublicLink
 		{
-			Id = "pub-" + Guid.NewGuid(),
+			Id = newPublicId,
 			DocumentId = documentId,
 			CreatedOn = DateTime.UtcNow,
 			// As timeframes are big we don't care about minor clock skew

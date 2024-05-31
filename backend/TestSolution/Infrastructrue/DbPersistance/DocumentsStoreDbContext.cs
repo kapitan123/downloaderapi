@@ -34,7 +34,7 @@ public class DocumentsStoreDbContext(DbContextOptions<DocumentsStoreDbContext> o
 			});
 
 		modelBuilder.Entity<PublicLink>()
-			.ToTable("public_link");
+			.ToTable("public_links");
 
 		modelBuilder.Entity<PublicLink>()
 			.HasKey(k => k.Id);

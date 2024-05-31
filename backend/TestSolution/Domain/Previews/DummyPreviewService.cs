@@ -9,10 +9,10 @@ namespace DocumentStore.Domain.PreviewGenerator;
 // So I'll upload a dummy jpeg for each file
 public class DummyPreviewService(IPreviewContentStore contentStore) : IPreviewGenerator, IPreviewViewer
 {
-	public async Task GeneratePreviewAsync(Guid documentId, Stream _, string contentType, CancellationToken token)
+	public async Task GeneratePreviewAsync(Guid documentId, Stream stream, string contentType, CancellationToken token)
 	{
-		using var emptyStream = new MemoryStream();
-		await contentStore.SavePreviewAsync(documentId, emptyStream, token);
+		// dummy previews work only with image/jpeg
+		await contentStore.SavePreviewAsync(documentId, stream, token);
 	}
 
 	public Task<Stream> ViewForDocument(Guid documentId, CancellationToken token)

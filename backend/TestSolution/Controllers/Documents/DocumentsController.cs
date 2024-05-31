@@ -3,6 +3,7 @@ using DocumentStore.Controllers.Documents.Validation;
 using DocumentStore.Domain.Documents;
 using DocumentStore.Domain.ShareabaleUrls;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DocumentStore.Controllers.Documents
 {
@@ -19,7 +20,7 @@ namespace DocumentStore.Controllers.Documents
 	{
 		[HttpPost("upload", Name = "Upload")]
 		[Produces("application/json")]
-		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Upload([FromForm] UploadDocumentRequest req, CancellationToken token)
@@ -35,9 +36,9 @@ namespace DocumentStore.Controllers.Documents
 
 			var meta = req.ToMetaData();
 
-			await store.SaveAsync(meta, file.OpenReadStream(), token);
+			var newDocId = await store.SaveAsync(meta, file.OpenReadStream(), token);
 
-			return Created();
+			return Ok(new DocumentCreatedResult { Id = newDocId });
 		}
 
 		[HttpGet("{id}", Name = "Download")]
@@ -67,7 +68,7 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownUserFile(Guid id, string user, CancellationToken token)
+		public async Task<IActionResult> DownUserFile(Guid id, [BindRequired] string user, CancellationToken token)
 		{
 			// This method uses one of conventional ways to handle NotFound cases
 			try
@@ -92,13 +93,19 @@ namespace DocumentStore.Controllers.Documents
 			}
 		}
 
-		[HttpGet("{id}/share", Name = "Share")]
+		[HttpPost("{id}/share", Name = "Share")]
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, int expirationInHours, CancellationToken token)
+		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, [BindRequired] int expirationInHours, CancellationToken token)
 		{
-			var location = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}");
+			// the method should also check if user has acces to the file
+			// and that th file actually exists
+			// these parts were skipped
+			if (expirationInHours < 1)
+			{
+				return BadRequest("Minimal link lifetime is 1 hour.");
+			}
 
 			// It would be better to use an inbuilt s3 presigned url,
 			// But we would not be able to count how many times the file was downloaded,
@@ -106,9 +113,11 @@ namespace DocumentStore.Controllers.Documents
 			// Also we assume there is basically no limit for expiration hours
 			var publicId = await shareService.GenerateTempPublicIdFor(id, expirationInHours, token);
 
+			var sharedUrl = $"{Request.Scheme}://{Request.Host}/api/v1/documents/shared/{publicId}/download";
+
 			var resp = new ShareDocumentResponse()
 			{
-				Data = new Uri($"{location.AbsoluteUri}/shared/{publicId}/download")
+				Data = new Uri(sharedUrl)
 			};
 
 			return Ok(resp);
@@ -141,7 +150,7 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownloadZip(List<Guid> ids, CancellationToken token)
+		public async Task<IActionResult> DownloadZip([BindRequired] List<Guid> ids, CancellationToken token)
 		{
 			// We assume that id list contains no duplicates,
 			// we also assume that user has access to any file from the list

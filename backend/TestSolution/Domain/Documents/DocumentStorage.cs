@@ -26,27 +26,33 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		return (metaTask.Result, contentTask.Result);
 	}
 
-	public async Task SaveAsync(DocumentMeta meta, Stream content, CancellationToken token)
+	public async Task<Guid> SaveAsync(DocumentMeta meta, Stream content, CancellationToken token)
 	{
 		// We slightly optimise removing repeated stream reads
 		using var fsGenerator = new MemoryStream();
 		using var fsStore = new MemoryStream();
 		using var fsTee = new TeeStream(fsGenerator, fsStore);
 
-		content.CopyTo(fsTee);
+		await content.CopyToAsync(fsTee, token);
 
 		// It is not clear if we should offload this generation to Lambda.
 		// In the current implementation, we reuse the file stream which is already in memory, saving on I/O.
 		// However, asynchronous processing would be a better solution for availability,
 		// as preview generation is not a critical feature and can be retried in the background.
-		var previewGenTask = previewGenerator.GeneratePreviewAsync(meta.Id, fsGenerator, meta.ContentType, token);
+		var documentId = Guid.NewGuid();
 
-		var saveFileTask = store.SaveDocumentAsync(meta.Id, meta.ContentType, fsStore, token);
+		var previewGenTask = previewGenerator.GeneratePreviewAsync(documentId, fsGenerator, meta.ContentType, token);
+
+		var saveFileTask = store.SaveDocumentAsync(documentId, meta.ContentType, fsStore, token);
 
 		await Task.WhenAll([previewGenTask, saveFileTask]);
 
+		var metaWithId = meta with { Id = documentId };
+
 		// It would make sense to emit an event after finishing the download.
-		await metaRepo.SaveAsync(meta, token);
+		await metaRepo.SaveAsync(metaWithId, token);
+
+		return metaWithId.Id;
 	}
 
 	public async Task<Stream> GetZipedFilesAsync(IEnumerable<Guid> fileIds, CancellationToken token)
