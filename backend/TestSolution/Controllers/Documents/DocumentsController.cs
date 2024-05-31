@@ -74,6 +74,8 @@ namespace DocumentStore.Controllers.Documents
 			try
 			{
 				// user value should be taken from user Identity
+				// I pass it as a query param as not to introduce custom authentication filters
+				// It's not an acceptable way to do it in prod
 				var (meta, content) = await store.GetFilteredByUserAsync(id, user, token);
 				Response.ContentLength = meta.Size;
 				Response.Headers.Append("Accept-Ranges", "bytes");
