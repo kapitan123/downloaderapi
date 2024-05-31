@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStore", "TestSolution\DocumentStore.csproj", "{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStore", "DocumentStore\DocumentStore.csproj", "{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTestProject\UnitTests.csproj", "{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}"
 EndProject

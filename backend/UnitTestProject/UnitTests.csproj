@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestSolution\DocumentStore.csproj" />
+    <ProjectReference Include="..\DocumentStore\DocumentStore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

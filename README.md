@@ -3,9 +3,15 @@
 
 
 ## How to run
-* Install docker <a href="https://docs.docker.com/desktop/">Docker engine and docker compose</a></br>
-* Run `docker compose --profile all up` from `./backend/TestSolution`
+** Run
+* Install docker <a href="https://docs.docker.com/desktop/">Docker engine and Compose plugin</a></br>
+* Run `docker compose --profile all up` from `./backend/DocumentStore`
 * Open swagger on localhost:5062 <a href="http://localhost:5204/swagger/index.html">this link</a> 
+
+** Debug
+* Install <a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0">.NET8</a></br>
+* Build `DocumentsApi.sln'
+* Run `docker compose --profile infra up` from `./backend/DocumentStore`
 
 # Design choices
 The application uses a lighter version of Clean Architecture and incorporates some elements of Domain-Driven Design (DDD). 
