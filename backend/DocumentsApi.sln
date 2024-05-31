@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStore", "DocumentStore\DocumentStore.csproj", "{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTestProject\UnitTests.csproj", "{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{E786A6BC-1D54-49C3-BB6D-5A5F0C43D13E}"
+	ProjectSection(SolutionItems) = preProject
+		aws\init-aws.sh = aws\init-aws.sh
+		aws\localstack.Dockerfile = aws\localstack.Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql-migrations", "sql-migrations", "{644723D7-97DF-4D43-A9F4-EA89A86CEDBF}"
+	ProjectSection(SolutionItems) = preProject
+		sql-migrations\0000-set-snapshot-isolation.sql = sql-migrations\0000-set-snapshot-isolation.sql
+		sql-migrations\0001-create-documents_metadata-table.sql = sql-migrations\0001-create-documents_metadata-table.sql
+		sql-migrations\0002-create-public-links-table.sql = sql-migrations\0002-create-public-links-table.sql
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{8D50E255-770E-48BB-9CF3-987A97038F8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4E152702-91B8-49CC-8FD8-996B00C8642A}
+	EndGlobalSection
+EndGlobal
