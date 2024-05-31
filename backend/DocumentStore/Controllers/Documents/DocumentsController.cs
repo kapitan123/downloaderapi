@@ -155,7 +155,7 @@ namespace DocumentStore.Controllers.Documents
 			// We assume that id list contains no duplicates,
 			// we also assume that user has access to any file from the list
 			// to not spend to much time on error handling of edge cases
-			if (ids?.Count < 1) // AK TODO return two
+			if (ids?.Count < 2) // AK TODO return two
 			{
 				return BadRequest(ZipDownloadError.NotFilesToZip());
 			}
