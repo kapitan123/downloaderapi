@@ -1,4 +1,4 @@
-namespace UnitTestProject
+namespace UnitTests.Domain
 {
 	public class UnitTest1
 	{

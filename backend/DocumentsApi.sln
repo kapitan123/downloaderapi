@@ -7,11 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentStore", "TestSoluti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTestProject\UnitTests.csproj", "{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{3C405832-76C1-49D8-9C28-4574AE9A0F79}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E0EF1914-4EAC-42EE-9AB5-588D6CEF109B} = {E0EF1914-4EAC-42EE-9AB5-588D6CEF109B}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,10 +21,6 @@ Global
 		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C405832-76C1-49D8-9C28-4574AE9A0F79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C405832-76C1-49D8-9C28-4574AE9A0F79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C405832-76C1-49D8-9C28-4574AE9A0F79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C405832-76C1-49D8-9C28-4574AE9A0F79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
