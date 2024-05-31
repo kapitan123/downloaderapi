@@ -37,6 +37,7 @@ namespace UnitTests.Domain
 			_metaRepoMock.Setup(m => m.GetAsync(documentId, token)).ReturnsAsync(documentMeta);
 			_storeMock.Setup(s => s.ReadDocumentAsync(documentId, token)).ReturnsAsync(documentContent);
 
+			// Act
 			var (meta, content) = await _sut.GetFilteredByUserAsync(documentId, user, token);
 
 			Assert.Equal(documentMeta, meta);
@@ -47,7 +48,7 @@ namespace UnitTests.Domain
 			_metaRepoMock.Verify(m => m.IncrementDownloadsAsync(documentId, token), Times.Once);
 		}
 
-		// The naming I prefer contains no method name, and descrives a usecase
+		// The naming I prefer contains no method name, and describes a usecase
 		[Fact]
 		public async Task Should_Throw_Exception_When_File_Is_Accessed_Not_By_An_Owner()
 		{
@@ -59,9 +60,10 @@ namespace UnitTests.Domain
 
 			_metaRepoMock.Setup(m => m.GetAsync(documentId, token)).ReturnsAsync(documentMeta);
 
+			// Act & Assert
 			var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _sut.GetFilteredByUserAsync(documentId, user, token));
 
-			// Genreally I prefer not to test the exception messages
+			// Genreally I prefer not to test an exception message
 			// But in this case it contains important data
 			Assert.Equal($"User {user} tried to access a file {documentId} which belongs to {documentMeta.UploadedBy}", exception.Message);
 
