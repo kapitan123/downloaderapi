@@ -9,8 +9,8 @@
 ## Debug
 * Install <a href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0">.NET8</a></br>
 * Go to  `./backend/DocumentStore`
-* Run `docker compose --profile infra up` from `./backend/DocumentStore`
-* Run `dotnet run --project DocumentStore.csproj'
+* Run `docker compose --profile infra up` to spin up dependancies
+* Run `dotnet run --project DocumentStore.csproj`
 
 # Design choices
 The application uses a lighter version of Clean Architecture and incorporates some elements of Domain-Driven Design (DDD). 
