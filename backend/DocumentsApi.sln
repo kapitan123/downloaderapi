@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql-migrations", "sql-migra
 		sql-migrations\0002-create-public-links-table.sql = sql-migrations\0002-create-public-links-table.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{8D50E255-770E-48BB-9CF3-987A97038F8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,10 @@ Global
 		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48D98CB7-FC90-4A28-AD2D-4758C1E288A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D50E255-770E-48BB-9CF3-987A97038F8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

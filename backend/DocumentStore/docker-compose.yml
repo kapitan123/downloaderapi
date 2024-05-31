@@ -10,7 +10,7 @@ services:
     ports:
       - 4566:4566  # Edge port
       - 4572:4572  # S3 service port
-    envi  ronment:
+    environment:
       - SERVICES=s3
       - DEBUG=${DEBUG:-0}
       - AWS_DEFAULT_REGION=us-east-1
@@ -33,6 +33,8 @@ services:
   documents-api:
     profiles: [all]
     container_name: documents-api
-    image: kapitan123/documents-api:latest
+    build:
+        context: ..
+        dockerfile: DocumentStore/Dockerfile
     ports:
       - 80:80
