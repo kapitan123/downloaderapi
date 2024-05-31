@@ -18,7 +18,8 @@ public class MetadataRepository(DbContext context) : IMetadataRepository
 			.FirstOrDefaultAsync(e => e.Id == id,
 		token);
 
-		// I'm not a big fan of this approach but this is how ti's done most of the time
+		// I'm not a big fan of this approach but this is how it's done most of the time
+		// or return of a nullable.
 		return doc ?? throw new KeyNotFoundException();
 	}
 

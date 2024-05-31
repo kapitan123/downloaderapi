@@ -38,7 +38,29 @@ namespace DocumentStore.Controllers.Documents
 			await store.SaveAsync(meta, file.OpenReadStream(), token);
 
 			return Created();
+		}
 
+
+		[HttpGet("{id}", Name = "Download")]
+		[Produces("application/octet-stream")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> DownLoadFile(Guid id, CancellationToken token)
+		{
+			// This method uses one of conventional ways to handle NotFound cases
+			try
+			{
+				var (meta, content) = await store.GetAsync(id, token);
+				Response.ContentLength = meta.Size;
+				Response.Headers.Append("Accept-Ranges", "bytes");
+				Response.Headers.Append("Content-Range", "bytes 0-" + meta.Size);
+				return File(content, meta.ContentType, meta.Name);
+			}
+			catch (KeyNotFoundException)
+			{
+				return NotFound();
+			}
 		}
 
 		[HttpGet("{id}/share", Name = "Share")]
@@ -83,28 +105,6 @@ namespace DocumentStore.Controllers.Documents
 				async notFound => NotFound());
 		}
 
-		[HttpGet("{id}", Name = "Download")]
-		[Produces("application/octet-stream")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownLoadFile(Guid id, CancellationToken token)
-		{
-			// This method uses one of conventional ways to handle NotFound cases
-			try
-			{
-				var (meta, content) = await store.GetAsync(id, token);
-				Response.ContentLength = meta.Size;
-				Response.Headers.Append("Accept-Ranges", "bytes");
-				Response.Headers.Append("Content-Range", "bytes 0-" + meta.Size);
-				return File(content, meta.ContentType, meta.Name);
-			}
-			catch (KeyNotFoundException)
-			{
-				return NotFound();
-			}
-		}
-
 		// DownloadZip does not have an error handlung branch for missing documents
 		// In this case we treat any missing file as a complete failure
 		[HttpGet("download-zip", Name = "DownloadZip")]
@@ -114,6 +114,7 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DownloadZip(List<Guid> ids, CancellationToken token)
 		{
+			// We assume that id list contains no duplicates
 			if (ids?.Count < 2)
 			{
 				return BadRequest(ZipDownloadError.NotFilesToZip());

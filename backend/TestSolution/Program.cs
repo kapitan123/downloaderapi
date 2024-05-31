@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 builder
 	.AddDocumentsStore()
-	.AddPreviewGeneration()
+	.AddPublicLinks()
 	.AddPreviewGeneration();
 
 builder.Services.AddApiVersioning(options =>
