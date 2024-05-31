@@ -40,9 +40,12 @@ public class MetadataRepository(DocumentsStoreDbContext context) : IMetadataRepo
 
 			documentMetas.Update(doc);
 			await context.SaveChangesAsync(token);
+
+			transaction.Commit();
 		}
 		catch (DbUpdateConcurrencyException)
 		{
+			var test = "";
 			// we should have some kind of a retry logic here
 		}
 	}

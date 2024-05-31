@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{E786A6BC-1D5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql-migrations", "sql-migrations", "{644723D7-97DF-4D43-A9F4-EA89A86CEDBF}"
 	ProjectSection(SolutionItems) = preProject
+		sql-migrations\0000-set-snapshot-isolation.sql = sql-migrations\0000-set-snapshot-isolation.sql
 		sql-migrations\0001-create-documents_metadata-table.sql = sql-migrations\0001-create-documents_metadata-table.sql
 		sql-migrations\0002-create-public-links-table.sql = sql-migrations\0002-create-public-links-table.sql
 	EndProjectSection

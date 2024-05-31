@@ -47,19 +47,19 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 
 		await Task.WhenAll([previewGenTask, saveFileTask]);
 
-		var metaWithId = meta with { Id = documentId };
+		meta.Id = documentId;
 
 		// It would make sense to emit an event after finishing the download.
-		await metaRepo.SaveAsync(metaWithId, token);
+		await metaRepo.SaveAsync(meta, token);
 
-		return metaWithId.Id;
+		return meta.Id;
 	}
 
 	public async Task<Stream> GetZipedFilesAsync(IEnumerable<Guid> fileIds, CancellationToken token)
 	{
 		var documentTasks = fileIds.Select(id => GetAsync(id, token)).ToList();
 
-		using var ms = new MemoryStream();
+		var ms = new MemoryStream(); // It's callers responsibility to properly dispose the stream
 
 		using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
 		{
@@ -70,7 +70,6 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 				var entry = zip.CreateEntry(meta.Name, CompressionLevel.Optimal);
 
 				using var entryStream = entry.Open();
-				content.Seek(0, SeekOrigin.Begin);
 				await content.CopyToAsync(entryStream, token);
 			}
 		}

@@ -97,7 +97,7 @@ namespace DocumentStore.Controllers.Documents
 		[Produces("application/json")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> GetShareUrl([FromRoute] Guid id, [BindRequired] int expirationInHours, CancellationToken token)
+		public async Task<IActionResult> CreateShareUrl([FromRoute] Guid id, [BindRequired] int expirationInHours, CancellationToken token)
 		{
 			// the method should also check if user has acces to the file
 			// and that th file actually exists
@@ -150,12 +150,12 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-		public async Task<IActionResult> DownloadZip([BindRequired] List<Guid> ids, CancellationToken token)
+		public async Task<IActionResult> DownloadZip([FromQuery, BindRequired] List<Guid> ids, CancellationToken token)
 		{
 			// We assume that id list contains no duplicates,
 			// we also assume that user has access to any file from the list
 			// to not spend to much time on error handling of edge cases
-			if (ids?.Count < 2)
+			if (ids?.Count < 1) // AK TODO return two
 			{
 				return BadRequest(ZipDownloadError.NotFilesToZip());
 			}

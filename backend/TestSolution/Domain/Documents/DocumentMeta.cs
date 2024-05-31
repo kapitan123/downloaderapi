@@ -1,7 +1,7 @@
 ﻿namespace DocumentStore.Domain.Documents;
 
 // It has no domain logic, so I skipped separating DB and Domain models
-public record DocumentMeta
+public class DocumentMeta
 {
 	public Guid Id { get; set; }
 
