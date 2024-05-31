@@ -1,4 +1,6 @@
 # downloaderapi
+##
+
 
 ## How to run
 * Install docker <a href="https://docs.docker.com/desktop/">Docker engine and docker compose</a></br>
@@ -15,3 +17,4 @@
 * If it's a multiregional service we can use CDN, depends on how the service will be used
 * If the API is mostly for service-to-service usage it makes sense to directly share files from S3 without restriming
 * Add checksumm check
+* Add e2e and integration tests

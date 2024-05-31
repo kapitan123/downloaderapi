@@ -40,7 +40,6 @@ namespace DocumentStore.Controllers.Documents
 			return Created();
 		}
 
-
 		[HttpGet("{id}", Name = "Download")]
 		[Produces("application/octet-stream")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,6 +50,7 @@ namespace DocumentStore.Controllers.Documents
 			// This method uses one of conventional ways to handle NotFound cases
 			try
 			{
+
 				var (meta, content) = await store.GetAsync(id, token);
 				Response.ContentLength = meta.Size;
 				Response.Headers.Append("Accept-Ranges", "bytes");
@@ -60,6 +60,34 @@ namespace DocumentStore.Controllers.Documents
 			catch (KeyNotFoundException)
 			{
 				return NotFound();
+			}
+		}
+
+		[HttpGet(Name = "DownloadUserFile")]
+		[Produces("application/octet-stream")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<IActionResult> DownUserFile(Guid id, string user, CancellationToken token)
+		{
+			// This method uses one of conventional ways to handle NotFound cases
+			try
+			{
+				// user value should be taken from user Identity
+				var (meta, content) = await store.GetFilteredByUserAsync(id, user, token);
+				Response.ContentLength = meta.Size;
+				Response.Headers.Append("Accept-Ranges", "bytes");
+				Response.Headers.Append("Content-Range", "bytes 0-" + meta.Size);
+				return File(content, meta.ContentType, meta.Name);
+			}
+			catch (KeyNotFoundException)
+			{
+				return NotFound();
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				logger.LogWarning(message: ex.Message);
+				return Forbid();
 			}
 		}
 
@@ -114,7 +142,9 @@ namespace DocumentStore.Controllers.Documents
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DownloadZip(List<Guid> ids, CancellationToken token)
 		{
-			// We assume that id list contains no duplicates
+			// We assume that id list contains no duplicates,
+			// we also assume that user has access to any file from the list
+			// to not spend to much time on error handling of edge cases
 			if (ids?.Count < 2)
 			{
 				return BadRequest(ZipDownloadError.NotFilesToZip());

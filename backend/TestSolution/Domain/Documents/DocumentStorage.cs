@@ -5,7 +5,7 @@ using TestSolution.Infrastructrue.Web;
 
 namespace DocumentStore.Domain.Documents;
 
-public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementContentStore store, IMetadataRepository metaRepo)
+public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementContentStore store, IMetadataRepository metaRepo, ILogger<DocumentStorage> logger)
 	: IDocumentStorage, IMetadataStorage, IZipper
 {
 	public async Task<(DocumentMeta Meta, Stream Content)> GetAsync(Guid id, CancellationToken token)
@@ -80,5 +80,27 @@ public class DocumentStorage(IPreviewGenerator previewGenerator, IDocuementConte
 		var result = await metaRepo.GetAllAsync(token);
 
 		return result;
+	}
+
+	public async Task<(DocumentMeta Meta, Stream Content)> GetFilteredByUserAsync(Guid id, string user, CancellationToken token)
+	{
+		// This operation can be performed on the Database side
+		// But this way we won't be able to tell if the user has no access
+		// or no file with such id
+		var meta = await metaRepo.GetAsync(id, token);
+
+		if (meta.UploadedBy != user)
+		{
+			// This is not a great way to do it, because this exception message can't be used in structural logging, hence params won't be indexed
+			// But to do it a proper way I would need to introduce a custom exception.			
+			throw new UnauthorizedAccessException($"User {user} tried to access a file {id} which belongs to {meta.UploadedBy}");
+		}
+
+		var content = await store.ReadDocumentAsync(id, token);
+
+		await metaRepo.IncrementDownloads(id, token);
+
+		return (meta, content);
+
 	}
 }
