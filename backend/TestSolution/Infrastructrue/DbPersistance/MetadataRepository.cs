@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DocumentStore.Infrastructrue.MetadataPersistance;
 
-public class MetadataRepository(DbContext context) : IMetadataRepository
+public class MetadataRepository(DocumentsStoreDbContext context) : IMetadataRepository
 {
-	private readonly DbSet<DocumentMeta> documentMetas = context.Set<DocumentMeta>();
+	private readonly DbSet<DocumentMeta> documentMetas = context.DocumentMetas;
 
 	public async Task<List<DocumentMeta>> GetAllAsync(CancellationToken token)
 	{

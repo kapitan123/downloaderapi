@@ -48,17 +48,18 @@ public static class WebApplicationBuilderExtensions
 			options.UseNpgsql(sqlSettings.ConnectionString));
 
 		builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
+		builder.Services.AddScoped<IPublicLinkRepository, PublicLinkRepository>();
 
 		builder.Services.AddSingleton<ITransferUtility, TransferUtility>();
 		builder.Services.AddSingleton<IDocuementContentStore, S3Store>();
+		builder.Services.AddSingleton<IPreviewContentStore, S3Store>();
 
 		return builder;
 	}
 
 	public static WebApplicationBuilder AddPublicLinks(this WebApplicationBuilder builder)
 	{
-		builder.Services.AddScoped<IPublicLinkRepository, PublicLinkRepository>();
-		builder.Services.AddSingleton<IShareService, ShareService>();
+		builder.Services.AddScoped<IShareService, ShareService>();
 
 		return builder;
 	}
@@ -67,7 +68,6 @@ public static class WebApplicationBuilderExtensions
 	{
 		builder.Services.AddSingleton<IPreviewGenerator, DummyPreviewService>();
 		builder.Services.AddSingleton<IPreviewViewer, DummyPreviewService>();
-		builder.Services.AddSingleton<IPreviewContentStore, S3Store>();
 
 		return builder;
 	}
@@ -78,9 +78,9 @@ public static class WebApplicationBuilderExtensions
 			builder.Configuration.GetSection(UploadValidatorSettings.Section));
 
 		builder.Services.AddSingleton<IUploadValidator, UploadValidator>();
-		builder.Services.AddSingleton<IDocumentStorage, DocumentStorage>();
-		builder.Services.AddSingleton<IMetadataStorage, DocumentStorage>();
-		builder.Services.AddSingleton<IZipper, DocumentStorage>();
+		builder.Services.AddScoped<IDocumentStorage, DocumentStorage>();
+		builder.Services.AddScoped<IMetadataStorage, DocumentStorage>();
+		builder.Services.AddScoped<IZipper, DocumentStorage>();
 
 		return builder;
 	}

@@ -1,13 +1,14 @@
 ﻿using DocumentStore.Domain.ShareabaleUrls;
+using DocumentStore.Infrastructrue.MetadataPersistance;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 
 namespace DocumentStore.Infrastructrue.DbPersistance;
 
-public class PublicLinkRepository(DbContext context) : IPublicLinkRepository
+public class PublicLinkRepository(DocumentsStoreDbContext context) : IPublicLinkRepository
 {
-	private readonly DbSet<PublicLink> publicLinks = context.Set<PublicLink>();
+	private readonly DbSet<PublicLink> publicLinks = context.PublicLinks;
 
 	public async Task Save(PublicLink publicLink, CancellationToken token)
 	{
