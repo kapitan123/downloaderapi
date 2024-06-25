@@ -1,3 +1,15 @@
+# Challenge Details
+The application is a document library intended to give its users a web based solution to store and share their documents with others.
+
+Functional Requirements:
+
+Design and implement the application’s UI / API based on the requirements:
+* available document types for uploading PDF / Excel / Word/ txt / pictures documents
+* display / get a list of available documents name of the document icon based on its type a preview image of its content 1st page content date and time of upload number of downloads
+* download / upload a document
+* download / upload several documents
+* a document can be shared with other users via a generated link which is publicly available for the specified time period (e.g.: 1 hour, 1 day, etc.)
+
 # How to run
 ## Run
 * Install docker <a href="https://docs.docker.com/desktop/">Docker engine and Compose plugin</a></br>
